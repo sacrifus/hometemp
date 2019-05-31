@@ -104,7 +104,7 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-                $("#output2").append("<b>Piscine: </b>" + "<span class=\"temp full\">" + "\n"  + cToF(temp) + "<span class=\"sup\">&deg;F</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
+                $("#output2").html("<b>Piscine: </b>" + "<span class=\"temp full\">" + "\n"  + cToF(temp) + "<span class=\"sup\">&deg;F</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
@@ -121,7 +121,7 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-                $("#output3").append("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
+                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
@@ -138,7 +138,7 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-                $("#output4").append("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
+                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
