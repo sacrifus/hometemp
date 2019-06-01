@@ -121,8 +121,8 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-		var humidity = tempdata.cap;
-                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "</b>");
+		var humidity = tempdata.cap.toFixed(1);
+                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
@@ -139,8 +139,8 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-		var humidity = tempdata.cap;
-                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "</b>");
+		var humidity = tempdata.cap.toFixed(1);
+                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
