@@ -152,7 +152,6 @@
 			    $.ajax({
             url: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=1&convert=USD&CMC_PRO_API_KEY=3053f47f-390e-43bf-835c-27a8c060b76b",
             type: 'GET',
-            dataType: 'json',
             success: function(res) {
                $('#result').html(res)
             }
