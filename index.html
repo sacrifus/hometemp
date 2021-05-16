@@ -42,7 +42,7 @@
 					</div>
 					<div class="3u">
 						<section>
-							<a href="#" class="image full"><img src="images/outside.jpg" alt="" /></a>
+							<a href="#" class="image full"><img src="images/pool.jpg" alt="" /></a>
 							<p id="output2"></p>
 						</section>
 					</div>
@@ -66,7 +66,7 @@
 			function cToF(celsius) 
 			{
 				var cTemp = celsius;
-				var cToFahr = cTemp * 9 / 5 + 34;
+				var cToFahr = cTemp * 9 / 5 + 36;
 				return cToFahr.toFixed(1);
 			}
             $.ajaxSetup({
@@ -104,7 +104,7 @@
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-                $("#output2").html("<b>Garage: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
+                $("#output2").html("<b>Piscine: </b>" + "<span class=\"temp full\">" + "\n"  + cToF(temp) + "<span class=\"sup\">&deg;F</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
