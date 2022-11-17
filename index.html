@@ -116,7 +116,7 @@
               data: JSON.stringify({uuid: "c579d742-9d4d-49e2-b979-720099ea52f2"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1)+1;
+                var temp=tempdata.temp_degC.toFixed(1)+100;
                 var humidity=tempdata.cap.toFixed(1);
                 var date = new Date(tempdata.time);
                 var dt = new Date();
@@ -134,7 +134,7 @@
               data: JSON.stringify({uuid: "066701db-0e8e-4eac-9507-0ff1659fcb01"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1)+1;
+                var temp=tempdata.temp_degC.toFixed(1)+100;
                 var humidity=tempdata.cap.toFixed(1);
                 var date = new Date(tempdata.time);
                 var dt = new Date();
