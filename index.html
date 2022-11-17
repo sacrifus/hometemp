@@ -116,13 +116,13 @@
               data: JSON.stringify({uuid: "c579d742-9d4d-49e2-b979-720099ea52f2"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1)+100;
+                var temp=tempdata.temp_degC.toFixed(1);
                 var humidity=tempdata.cap.toFixed(1);
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
 		var humidity = tempdata.cap.toFixed(1);
-                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
+                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp+1 + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
@@ -134,13 +134,13 @@
               data: JSON.stringify({uuid: "066701db-0e8e-4eac-9507-0ff1659fcb01"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1)+100;
+                var temp=tempdata.temp_degC.toFixed(1);
                 var humidity=tempdata.cap.toFixed(1);
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
 		var humidity = tempdata.cap.toFixed(1);
-                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
+                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp+1 + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
