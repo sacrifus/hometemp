@@ -95,9 +95,9 @@
             }
             });
 
-            //Pool
+            //Garage
             $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "01fcdf1b-dd9a-4373-9d0c-c47703d4b6fb"}),
+              data: JSON.stringify({uuid: "c3225c2d-e78a-4ec4-9d02-1163eb6991cb"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
                 var temp=tempdata.temp_degC.toFixed(1);
