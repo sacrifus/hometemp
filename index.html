@@ -8,7 +8,6 @@
 	<head>
 		<title>David Maison</title>
 		<meta http-equiv="refresh" content="900">
-		<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
 		<script
 			type="text/javascript"
 			src="//code.jquery.com/jquery-1.6.4.js">
@@ -43,7 +42,7 @@
 					</div>
 					<div class="3u">
 						<section>
-							<a href="#" class="image full"><img src="images/pool.jpg" alt="" /></a>
+							<a href="#" class="image full"><img src="images/outside.jpg" alt="" /></a>
 							<p id="output2"></p>
 						</section>
 					</div>
@@ -67,7 +66,7 @@
 			function cToF(celsius) 
 			{
 				var cTemp = celsius;
-				var cToFahr = cTemp * 9 / 5 + 36;
+				var cToFahr = cTemp * 9 / 5 + 34;
 				return cToFahr.toFixed(1);
 			}
             $.ajaxSetup({
@@ -98,14 +97,14 @@
 
             //Pool
             $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "c3225c2d-e78a-4ec4-9d02-1163eb6991cb"}),
+              data: JSON.stringify({uuid: "01fcdf1b-dd9a-4373-9d0c-c47703d4b6fb"}),
               success: function (retval, textStatus) {
                 var tempdata=retval.d;
                 var temp=tempdata.temp_degC.toFixed(1);
                 var date = new Date(tempdata.time);
                 var dt = new Date();
                 date.setHours(dt.getHours());
-                $("#output2").html("<b>Piscine: </b>" + "<span class=\"temp full\">" + "\n"  + cToF(temp) + "<span class=\"sup\">&deg;F</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
+                $("#output2").html("<b>Garage: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
             },
             error: function (xhr, textStatus, exception) {
               alert(textStatus);
