@@ -67,7 +67,7 @@
 			function cToF(celsius) 
 			{
 				var cTemp = celsius;
-				var cToFahr = cTemp * 9 / 5 + 36;
+				var cToFahr = cTemp * 9 / 5 + 35;
 				return cToFahr.toFixed(1);
 			}
             $.ajaxSetup({
