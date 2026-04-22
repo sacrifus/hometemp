@@ -11,8 +11,8 @@ header("Access-Control-Allow-Origin: *");
 // YoLink app → Menu → Settings → Account
 //           → Advanced Settings → User Access Credentials
 // -------------------------------------------------------
-$UAID       = "YOUR_UAID_HERE";
-$SECRET_KEY = "YOUR_SECRET_KEY_HERE";
+$UAID       = "ua_45EB3ABA5D774D67BB17C6A526EA3DFB";
+$SECRET_KEY = "sec_v1_cMf0OAz3iSH+UJuBOf06Qg==";
 // -------------------------------------------------------
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
