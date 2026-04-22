@@ -173,106 +173,95 @@
             });
 
             // -------------------------------------------------------
-            // YoLink — only 3 things to fill in:
-            //
-            // 1. UAID and Secret Key:
-            //    YoLink app → Menu (☰) → Settings → Account
-            //    → Advanced Settings → User Access Credentials
-            //
-            // 2. deviceName: the name of the sensor exactly as it
-            //    appears in your YoLink app (case-sensitive)
+            // YoLink — fill in your sensor names exactly as they
+            // appear in the YoLink app (case-sensitive).
+            // Credentials live in yolink-proxy.php (server-side).
             // -------------------------------------------------------
-            var YOLINK_UAID       = "ua_45EB3ABA5D774D67BB17C6A526EA3DFB";
-            var YOLINK_SECRET_KEY = "sec_v1_cMf0OAz3iSH+UJuBOf06Qg==";
-
             var yolinkSensors = [
                 { outputId: "#output5", deviceName: "Kitchen", label: "YoLink 1" },
                 { outputId: "#output6", deviceName: "Garage", label: "YoLink 2" }
             ];
             // -------------------------------------------------------
 
-            function fetchYoLinkTemperature(accessToken, sensor) {
+            function yolinkApi(accessToken, body, callback) {
                 $.ajax({
-                    url: "https://api.yosmart.com/open/yolink/v2/api",
+                    url: "yolink-proxy.php?action=api&token=" + encodeURIComponent(accessToken),
                     type: "POST",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    headers: { "Authorization": "Bearer " + accessToken },
-                    data: JSON.stringify({
-                        method: "THSensor.getState",
-                        targetDevice: sensor.deviceId,
-                        token: sensor.deviceToken
-                    }),
-                    success: function(retval) {
-                        var state = retval.data.state;
-                        var temp  = state.temperature.toFixed(1);
-                        var time  = new Date(retval.data.reportAt);
-                        $(sensor.outputId).html(
-                            "<b>" + sensor.label + ": </b>" +
-                            "<span class=\"temp full\">" + temp +
-                            "<span class=\"sup\">&deg;C</span>&nbsp&nbsp&nbsp</span>" +
-                            "Mise à jour: <b>" +
-                            time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) +
-                            "</b>"
-                        );
-                    },
-                    error: function() {
-                        $(sensor.outputId).html("<b>" + sensor.label + ":</b> Erreur de lecture");
-                    }
+                    data: JSON.stringify(body),
+                    success: callback,
+                    error: function() { callback(null); }
                 });
             }
 
-            // Step 1: get OAuth2 access token
+            function fetchYoLinkTemperature(accessToken, sensor) {
+                yolinkApi(accessToken, {
+                    method: "THSensor.getState",
+                    targetDevice: sensor.deviceId,
+                    token: sensor.deviceToken
+                }, function(retval) {
+                    if (!retval) {
+                        $(sensor.outputId).html("<b>" + sensor.label + ":</b> Erreur de lecture");
+                        return;
+                    }
+                    var state = retval.data.state;
+                    var temp  = state.temperature.toFixed(1);
+                    var time  = new Date(retval.data.reportAt);
+                    $(sensor.outputId).html(
+                        "<b>" + sensor.label + ": </b>" +
+                        "<span class=\"temp full\">" + temp +
+                        "<span class=\"sup\">&deg;C</span>&nbsp&nbsp&nbsp</span>" +
+                        "Mise à jour: <b>" +
+                        time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) +
+                        "</b>"
+                    );
+                });
+            }
+
+            // Step 1: get access token via proxy
             $.ajax({
-                url: "https://api.yosmart.com/open/yolink/token",
+                url: "yolink-proxy.php?action=token",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
                 dataType: "json",
-                data: "grant_type=client_credentials&client_id=" + YOLINK_UAID + "&client_secret=" + YOLINK_SECRET_KEY,
                 success: function(tokenData) {
                     var accessToken = tokenData.access_token;
 
-                    // Step 2: get full device list — deviceId and token are here, matched by name
-                    $.ajax({
-                        url: "https://api.yosmart.com/open/yolink/v2/api",
-                        type: "POST",
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        headers: { "Authorization": "Bearer " + accessToken },
-                        data: JSON.stringify({ method: "Home.getDeviceList" }),
-                        success: function(retval) {
-                            var devices = retval.data.devices;
+                    // Step 2: get device list via proxy
+                    yolinkApi(accessToken, { method: "Home.getDeviceList" }, function(retval) {
+                        if (!retval) {
+                            $.each(yolinkSensors, function(i, s) {
+                                $(s.outputId).html("<b>" + s.label + ":</b> Erreur liste appareils");
+                            });
+                            return;
+                        }
+                        var devices = retval.data.devices;
 
-                            // Step 3: match each sensor by name, then fetch its temperature
-                            $.each(yolinkSensors, function(i, sensor) {
-                                var match = null;
-                                $.each(devices, function(j, device) {
-                                    if (device.name === sensor.deviceName) {
-                                        match = device;
-                                        return false; // break
-                                    }
-                                });
-                                if (match) {
-                                    sensor.deviceId    = match.deviceId;
-                                    sensor.deviceToken = match.token;
-                                    fetchYoLinkTemperature(accessToken, sensor);
-                                } else {
-                                    $(sensor.outputId).html(
-                                        "<b>" + sensor.label + ":</b> Capteur introuvable: \"" + sensor.deviceName + "\""
-                                    );
+                        // Step 3: match by name, fetch temperature
+                        $.each(yolinkSensors, function(i, sensor) {
+                            var match = null;
+                            $.each(devices, function(j, device) {
+                                if (device.name === sensor.deviceName) {
+                                    match = device;
+                                    return false;
                                 }
                             });
-                        },
-                        error: function() {
-                            $.each(yolinkSensors, function(i, sensor) {
-                                $(sensor.outputId).html("<b>" + sensor.label + ":</b> Erreur liste appareils");
-                            });
-                        }
+                            if (match) {
+                                sensor.deviceId    = match.deviceId;
+                                sensor.deviceToken = match.token;
+                                fetchYoLinkTemperature(accessToken, sensor);
+                            } else {
+                                $(sensor.outputId).html(
+                                    "<b>" + sensor.label + ":</b> Capteur introuvable: \"" + sensor.deviceName + "\""
+                                );
+                            }
+                        });
                     });
                 },
                 error: function() {
-                    $.each(yolinkSensors, function(i, sensor) {
-                        $(sensor.outputId).html("<b>" + sensor.label + ":</b> Erreur d'authentification YoLink");
+                    $.each(yolinkSensors, function(i, s) {
+                        $(s.outputId).html("<b>" + s.label + ":</b> Erreur d'authentification YoLink");
                     });
                 }
             });
