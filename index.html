@@ -173,10 +173,13 @@
             });
 
             // -------------------------------------------------------
-            // YoLink — fill in your sensor names exactly as they
-            // appear in the YoLink app (case-sensitive).
-            // Credentials live in yolink-proxy.php (server-side).
+            // YoLink — two things to fill in:
+            // 1. WORKER_URL: the URL of your deployed Cloudflare Worker
+            //    e.g. "https://yolink-proxy.your-name.workers.dev"
+            // 2. deviceName: sensor name exactly as in the YoLink app
             // -------------------------------------------------------
+            var WORKER_URL = "https://fragrant-disk-2d6f.d-e29.workers.dev";
+
             var yolinkSensors = [
                 { outputId: "#output5", deviceName: "Kitchen", label: "YoLink 1" },
                 { outputId: "#output6", deviceName: "Garage", label: "YoLink 2" }
@@ -185,7 +188,7 @@
 
             function yolinkApi(accessToken, body, callback) {
                 $.ajax({
-                    url: "yolink-proxy.php?action=api&token=" + encodeURIComponent(accessToken),
+                    url: WORKER_URL + "?action=api&token=" + encodeURIComponent(accessToken),
                     type: "POST",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -219,16 +222,16 @@
                 });
             }
 
-            // Step 1: get access token via proxy
+            // Step 1: get access token via worker
             $.ajax({
-                url: "yolink-proxy.php?action=token",
+                url: WORKER_URL + "?action=token",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
                 dataType: "json",
                 success: function(tokenData) {
                     var accessToken = tokenData.access_token;
 
-                    // Step 2: get device list via proxy
+                    // Step 2: get device list via worker
                     yolinkApi(accessToken, { method: "Home.getDeviceList" }, function(retval) {
                         if (!retval) {
                             $.each(yolinkSensors, function(i, s) {
