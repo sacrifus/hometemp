@@ -44,8 +44,8 @@
 					</div>
 					<div class="3u">
 						<section>
-							<a href="#" class="image full"><img src="images/outside.jpg" alt="" /></a>
-							<p id="output2"></p>
+							<a href="#" class="image full"><img src="images/pool.jpg" alt="" /></a>
+							<p id="output7">Chargement YoLink...</p>
 						</section>
 					</div>
 					<div class="3u">
@@ -116,22 +116,6 @@
             }
             });
 
-            //Garage
-            $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "c3225c2d-e78a-4ec4-9d02-1163eb6991cb"}),
-              success: function (retval, textStatus) {
-                var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1);
-                var date = new Date(tempdata.time);
-                var dt = new Date();
-                date.setHours(dt.getHours());
-                $("#output2").html("<b>Garage: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
-            },
-            error: function (xhr, textStatus, exception) {
-              alert(textStatus);
-            }
-            });
-
             //Upstairs
             $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
               data: JSON.stringify({uuid: "c579d742-9d4d-49e2-b979-720099ea52f2"}),
@@ -176,7 +160,8 @@
 
             var yolinkSensors = [
                 { outputId: "#output5", deviceName: "Kitchen", label: "Cuisine" },
-                { outputId: "#output6", deviceName: "Garage", label: "Garage" }
+                { outputId: "#output6", deviceName: "Garage", label: "Garage" },
+				{ outputId: "#output7", deviceName: "Pool", label: "Pool" }
             ];
             // -------------------------------------------------------
 
