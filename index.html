@@ -5,260 +5,263 @@
     Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 -->
 <html>
-	<head>
-		<title>David Maison</title>
-		<meta http-equiv="refresh" content="900">
-		<script
-			type="text/javascript"
-			src="//code.jquery.com/jquery-1.6.4.js">
-		</script>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="description" content="" />
-		<meta name="keywords" content="" />
-		<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
-		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-		<script src="js/skel.min.js"></script>
-		<script src="js/skel-panels.min.js"></script>
-		<script src="js/init.js"></script>
-		<noscript>
-			<link rel="stylesheet" href="css/skel-noscript.css" />
-			<link rel="stylesheet" href="css/style.css" />
-		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-	</head>
-	<body class="homepage">
-			
-	<!-- Main -->
-		<div id="main">
-			<div class="container">
+<head>
+  <title>David Maison</title>
+  <!-- Refresh every 15 minutes to collect a new data point -->
+  <meta http-equiv="refresh" content="900">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
+  <!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="js/skel.min.js"></script>
+  <script src="js/skel-panels.min.js"></script>
+  <script src="js/init.js"></script>
+  <noscript>
+    <link rel="stylesheet" href="css/skel-noscript.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </noscript>
+  <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+  <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+</head>
+<body class="homepage">
 
-				<!-- Row 1: existing WirelessTag sensors -->
-				<div class="row">
-					<div class="3u">
-						<section>
-							<a href="graph.html?uuid=0f6ff5d2-dfa2-493e-893e-c9de8e50bfb0&label=Ext%C3%A9rieur&humidity=false" class="image full">
-								<img src="images/outside.jpg" alt="" />
-							</a>
-							<p id="output1"></p>
-						</section>
-					</div>
-					<div class="3u">
-						<section>
-							<a href="graph.html?yolink=Pool&label=Piscine&humidity=true" class="image full">
-								<img src="images/pool.jpg" alt="" />
-							</a>
-							<p id="output7">Chargement YoLink...</p>
-						</section>
-					</div>
-					<div class="3u">
-						<section>
-							<a href="graph.html?uuid=c579d742-9d4d-49e2-b979-720099ea52f2&label=En%20haut&humidity=true" class="image full">
-								<img src="images/salon.jpg" alt="" />
-							</a>
-							<p id="output3"></p>
-						</section>
-					</div>
-					<div class="3u">
-						<section>
-							<a href="graph.html?uuid=066701db-0e8e-4eac-9507-0ff1659fcb01&label=En%20bas&humidity=true" class="image full">
-								<img src="images/soussol.jpg" alt="" />
-							</a>
-							<p id="output4"></p>
-						</section>
-					</div>
-				</div>
+<!-- Main -->
+<div id="main">
+  <div class="container">
 
-				<!-- Row 2: YoLink sensors (scroll down to see) -->
-				<div class="row" style="margin-top: 15em;">
-					<div class="3u">
-						<section>
-							<a href="graph.html?yolink=Kitchen&label=Cuisine&humidity=true" class="image full">
-								<img src="images/fridge_up.png" alt="" />
-							</a>
-							<p id="output5">Chargement YoLink...</p>
-						</section>
-					</div>
-					<div class="3u">
-						<section>
-							<a href="graph.html?yolink=Garage&label=Garage&humidity=true" class="image full">
-								<img src="images/outside.jpg" alt="" />
-							</a>
-							<p id="output6">Chargement YoLink...</p>
-						</section>
-					</div>
-				</div>
+    <!-- Row 1 -->
+    <div class="row">
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=outside" class="image full"><img src="images/outside.jpg" alt="" /></a>
+          <p id="output-outside"></p>
+        </section>
+      </div>
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=pool" class="image full"><img src="images/pool.jpg" alt="" /></a>
+          <p id="output-pool">Chargement YoLink...</p>
+        </section>
+      </div>
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=upstairs" class="image full"><img src="images/salon.jpg" alt="" /></a>
+          <p id="output-upstairs"></p>
+        </section>
+      </div>
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=downstairs" class="image full"><img src="images/soussol.jpg" alt="" /></a>
+          <p id="output-downstairs"></p>
+        </section>
+      </div>
+    </div>
 
-			</div>
-		</div>
-	<!-- /Main -->
+    <!-- Row 2 -->
+    <div class="row" style="margin-top: 15em;">
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=kitchen" class="image full"><img src="images/fridge_up.png" alt="" /></a>
+          <p id="output-kitchen">Chargement YoLink...</p>
+        </section>
+      </div>
+      <div class="3u">
+        <section>
+          <a href="graph.html?id=garage" class="image full"><img src="images/outside.jpg" alt="" /></a>
+          <p id="output-garage">Chargement YoLink...</p>
+        </section>
+      </div>
+    </div>
 
-		<script>
-			function cToF(celsius) 
-			{
-				var cTemp = celsius;
-				var cToFahr = cTemp * 9 / 5 + 34;
-				return cToFahr.toFixed(1);
-			}
+  </div>
+</div>
+<!-- /Main -->
 
-            $.ajaxSetup({
-	            type: "POST",
-	            contentType: "application/json; charset=utf-8",
-	            cache: false,
-	            dataType: "json",
-	            xhrFields: {
-		            withCredentials: false
-	            }
-            });
+<script>
+// =============================================================================
+// Sensor definitions
+// =============================================================================
+var SENSORS = {
+  outside:    { label: 'Extérieur', hasHum: false },
+  pool:       { label: 'Piscine',   hasHum: true  },
+  upstairs:   { label: 'En haut',   hasHum: true  },
+  downstairs: { label: 'En bas',    hasHum: true  },
+  kitchen:    { label: 'Cuisine',   hasHum: true  },
+  garage:     { label: 'Garage',    hasHum: true  }
+};
 
-            //Outside
-            $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "0f6ff5d2-dfa2-493e-893e-c9de8e50bfb0"}),
-              success: function (retval, textStatus) {
-                var tempdata=retval.d;
-                var temp=tempdata.temp_degC.toFixed(1);
-                var date = new Date(tempdata.time);
-                var dt = new Date();
-                date.setHours(dt.getHours());
-                $("#output1").html("<b>Extérieur: </b>" + "<span class=\"temp full\">" + "\n"  + temp + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Mise à jour: " + "<b>" + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + "</b>");
-            },
-            error: function (xhr, textStatus, exception) {
-              alert(textStatus);
-            }
-            });
+var WIRELESSTAG_UUIDS = {
+  outside:    '0f6ff5d2-dfa2-493e-893e-c9de8e50bfb0',
+  upstairs:   'c579d742-9d4d-49e2-b979-720099ea52f2',
+  downstairs: '066701db-0e8e-4eac-9507-0ff1659fcb01'
+};
 
-            //Upstairs
-            $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "c579d742-9d4d-49e2-b979-720099ea52f2"}),
-              success: function (retval, textStatus) {
-                var tempdata=retval.d;
-                var temp=tempdata.temp_degC;
-		        var temp1 = temp+1;
-		        var temp2 = temp1.toFixed(1);
-                var humidity=tempdata.cap.toFixed(1);
-                var date = new Date(tempdata.time);
-                var dt = new Date();
-                date.setHours(dt.getHours());
-		        var humidity = tempdata.cap.toFixed(1);
-                $("#output3").html("<b>En haut: </b>" + "<span class=\"temp full\">" + "\n"  + temp2 + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
-            },
-            error: function (xhr, textStatus, exception) {
-              alert(textStatus);
-            }
-            });
+var YOLINK_DEVICES = {
+  pool:    'Pool',
+  kitchen: 'Kitchen',
+  garage:  'Garage'
+};
 
-            //Downstairs
-            $.ajax({url: "https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID",
-              data: JSON.stringify({uuid: "066701db-0e8e-4eac-9507-0ff1659fcb01"}),
-              success: function (retval, textStatus) {
-                var tempdata=retval.d;
-                var temp=tempdata.temp_degC;
-		        var temp1 = temp+1;
-		        var temp2 = temp1.toFixed(1);
-                var humidity=tempdata.cap.toFixed(1);
-                var date = new Date(tempdata.time);
-                var dt = new Date();
-                date.setHours(dt.getHours());
-		        var humidity = tempdata.cap.toFixed(1);
-                $("#output4").html("<b>En bas: </b>" + "<span class=\"temp full\">" + "\n"  + temp2 + "<span class=\"sup\">&deg;C</span>"+ "&nbsp&nbsp&nbsp</span>" + "\n" + "Humidité: " + "<b>" + humidity + "%</b>");
-            },
-            error: function (xhr, textStatus, exception) {
-              alert(textStatus);
-            }
-            });
+var WORKER_URL = 'https://fragrant-disk-2d6f.d-e29.workers.dev';
 
-            var WORKER_URL = "https://fragrant-disk-2d6f.d-e29.workers.dev";
+// Keep 10 days of 15-min readings = 10 * 24 * 4 = 960 points max per sensor
+var MAX_POINTS = 960;
 
-            var yolinkSensors = [
-                { outputId: "#output5", deviceName: "Kitchen", label: "Cuisine" },
-                { outputId: "#output6", deviceName: "Garage", label: "Garage" },
-				{ outputId: "#output7", deviceName: "Pool", label: "Pool" }
-            ];
-            // -------------------------------------------------------
+// =============================================================================
+// localStorage helpers
+// =============================================================================
+function saveReading(sensorId, temp, hum) {
+  try {
+    var key = 'sensorHistory_' + sensorId;
+    var history = JSON.parse(localStorage.getItem(key) || '[]');
+    history.push({ t: Date.now(), temp: parseFloat(temp.toFixed(2)), hum: hum !== null && hum !== undefined ? parseFloat(hum.toFixed(2)) : null });
+    if (history.length > MAX_POINTS) history = history.slice(-MAX_POINTS);
+    localStorage.setItem(key, JSON.stringify(history));
+  } catch(e) { /* quota exceeded or private browsing — silently skip */ }
+}
 
-            function yolinkApi(accessToken, body, callback) {
-                $.ajax({
-                    url: WORKER_URL + "?action=api&token=" + encodeURIComponent(accessToken),
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(body),
-                    success: callback,
-                    error: function() { callback(null); }
-                });
-            }
+// =============================================================================
+// Display helpers
+// =============================================================================
+function showReading(sensorId, temp, hum, time) {
+  var cfg = SENSORS[sensorId];
+  if (!cfg) return;
+  var el = document.getElementById('output-' + sensorId);
+  if (!el) return;
 
-            function fetchYoLinkTemperature(accessToken, sensor) {
-                yolinkApi(accessToken, {
-                    method: "THSensor.getState",
-                    targetDevice: sensor.deviceId,
-                    token: sensor.deviceToken
-                }, function(retval) {
-                    if (!retval) {
-                        $(sensor.outputId).html("<b>" + sensor.label + ":</b> Erreur de lecture");
-                        return;
-                    }
-                    var state = retval.data.state;
-                    var temp  = state.temperature.toFixed(1);
-                    var time  = new Date(retval.data.reportAt);
-                    $(sensor.outputId).html(
-                        "<b>" + sensor.label + ": </b>" +
-                        "<span class=\"temp full\">" + temp +
-                        "<span class=\"sup\">&deg;C</span>&nbsp&nbsp&nbsp</span>" +
-                        "Mise à jour: <b>" +
-                        time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) +
-                        "</b>"
-                    );
-                });
-            }
+  var timeStr = '';
+  if (time) {
+    var d = (time instanceof Date) ? time : new Date(time);
+    timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 
-            // Step 1: get access token via worker
-            $.ajax({
-                url: WORKER_URL + "?action=token",
-                type: "POST",
-                contentType: "application/x-www-form-urlencoded",
-                dataType: "json",
-                success: function(tokenData) {
-                    var accessToken = tokenData.access_token;
+  var html = '<b>' + cfg.label + ': </b>'
+    + '<span class="temp full">'
+    + temp.toFixed(1)
+    + '<span class="sup">&deg;C</span>&nbsp;&nbsp;&nbsp;</span>';
 
-                    // Step 2: get device list via worker
-                    yolinkApi(accessToken, { method: "Home.getDeviceList" }, function(retval) {
-                        if (!retval) {
-                            $.each(yolinkSensors, function(i, s) {
-                                $(s.outputId).html("<b>" + s.label + ":</b> Erreur liste appareils");
-                            });
-                            return;
-                        }
-                        var devices = retval.data.devices;
+  if (hum !== null && hum !== undefined && cfg.hasHum) {
+    html += 'Humidité: <b>' + hum.toFixed(1) + '%</b>';
+  } else if (timeStr) {
+    html += 'Mise à jour: <b>' + timeStr + '</b>';
+  }
 
-                        // Step 3: match by name, fetch temperature
-                        $.each(yolinkSensors, function(i, sensor) {
-                            var match = null;
-                            $.each(devices, function(j, device) {
-                                if (device.name === sensor.deviceName) {
-                                    match = device;
-                                    return false;
-                                }
-                            });
-                            if (match) {
-                                sensor.deviceId    = match.deviceId;
-                                sensor.deviceToken = match.token;
-                                fetchYoLinkTemperature(accessToken, sensor);
-                            } else {
-                                $(sensor.outputId).html(
-                                    "<b>" + sensor.label + ":</b> Capteur introuvable: \"" + sensor.deviceName + "\""
-                                );
-                            }
-                        });
-                    });
-                },
-                error: function() {
-                    $.each(yolinkSensors, function(i, s) {
-                        $(s.outputId).html("<b>" + s.label + ":</b> Erreur d'authentification YoLink");
-                    });
-                }
-            });
-        </script>
-	</body>
+  el.innerHTML = html;
+}
+
+// =============================================================================
+// WirelessTag fetching
+// =============================================================================
+$.ajaxSetup({
+  type: 'POST',
+  contentType: 'application/json; charset=utf-8',
+  cache: false,
+  dataType: 'json',
+  xhrFields: { withCredentials: false }
+});
+
+function fetchWirelessTag(sensorId) {
+  $.ajax({
+    url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID',
+    data: JSON.stringify({ uuid: WIRELESSTAG_UUIDS[sensorId] }),
+    success: function(retval) {
+      var d = retval.d;
+      var temp = d.temp_degC;
+      // Upstairs / downstairs sensors have a +1°C calibration offset
+      if (sensorId === 'upstairs' || sensorId === 'downstairs') temp += 1;
+      var hum  = (d.cap !== undefined && SENSORS[sensorId].hasHum) ? d.cap : null;
+      var time = new Date();  // use now as the timestamp for the stored reading
+
+      showReading(sensorId, temp, hum, time);
+      saveReading(sensorId, temp, hum);
+    },
+    error: function() {
+      var el = document.getElementById('output-' + sensorId);
+      if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur de lecture';
+    }
+  });
+}
+
+fetchWirelessTag('outside');
+fetchWirelessTag('upstairs');
+fetchWirelessTag('downstairs');
+
+// =============================================================================
+// YoLink fetching
+// =============================================================================
+function yolinkApi(accessToken, body, cb) {
+  $.ajax({
+    url: WORKER_URL + '?action=api&token=' + encodeURIComponent(accessToken),
+    type: 'POST',
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    data: JSON.stringify(body),
+    success: cb,
+    error: function() { cb(null); }
+  });
+}
+
+$.ajax({
+  url: WORKER_URL + '?action=token',
+  type: 'POST',
+  contentType: 'application/x-www-form-urlencoded',
+  dataType: 'json',
+  success: function(tokenData) {
+    var accessToken = tokenData.access_token;
+
+    yolinkApi(accessToken, { method: 'Home.getDeviceList' }, function(retval) {
+      if (!retval) {
+        $.each(YOLINK_DEVICES, function(sensorId) {
+          var el = document.getElementById('output-' + sensorId);
+          if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur liste appareils';
+        });
+        return;
+      }
+
+      var devices = retval.data.devices;
+
+      $.each(YOLINK_DEVICES, function(sensorId, deviceName) {
+        var match = null;
+        $.each(devices, function(i, dev) {
+          if (dev.name === deviceName) { match = dev; return false; }
+        });
+
+        if (!match) {
+          var el = document.getElementById('output-' + sensorId);
+          if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Capteur introuvable';
+          return;
+        }
+
+        yolinkApi(accessToken, {
+          method: 'THSensor.getState',
+          targetDevice: match.deviceId,
+          token: match.token
+        }, function(stateRetval) {
+          if (!stateRetval) {
+            var el = document.getElementById('output-' + sensorId);
+            if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur de lecture';
+            return;
+          }
+          var state = stateRetval.data.state;
+          var temp  = state.temperature;
+          var hum   = (state.humidity !== undefined && SENSORS[sensorId].hasHum)
+                        ? state.humidity : null;
+
+          showReading(sensorId, temp, hum, new Date());
+          saveReading(sensorId, temp, hum);
+        });
+      });
+    });
+  },
+  error: function() {
+    $.each(YOLINK_DEVICES, function(sensorId) {
+      var el = document.getElementById('output-' + sensorId);
+      if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur d\'authentification';
+    });
+  }
+});
+</script>
+</body>
 </html>

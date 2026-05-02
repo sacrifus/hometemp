@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Graphique</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,6 +15,7 @@
       min-height: 100vh;
     }
 
+    /* ---- Header ---- */
     header {
       background: #f4f4f4;
       border-bottom: 1px solid #ccc;
@@ -24,8 +24,7 @@
       align-items: center;
       gap: 16px;
     }
-
-    header a {
+    header a.back-btn {
       text-decoration: none;
       color: #555;
       font-size: 13px;
@@ -35,14 +34,16 @@
       border-radius: 3px;
       transition: background 0.15s;
     }
-    header a:hover { background: #ccc; }
+    header a.back-btn:hover { background: #ccc; }
+    header h1 { font-size: 18px; font-weight: 600; color: #222; }
 
-    header h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #222;
+    .last-update {
+      margin-left: auto;
+      font-size: 11px;
+      color: #888;
     }
 
+    /* ---- Range bar ---- */
     .range-bar {
       background: #f4f4f4;
       border-bottom: 1px solid #ccc;
@@ -50,15 +51,8 @@
       display: flex;
       gap: 8px;
       align-items: center;
-      flex-wrap: wrap;
     }
-
-    .range-bar span {
-      font-size: 12px;
-      color: #666;
-      margin-right: 4px;
-    }
-
+    .range-bar span { font-size: 12px; color: #666; margin-right: 4px; }
     .range-btn {
       font-size: 12px;
       padding: 4px 12px;
@@ -69,13 +63,10 @@
       color: #444;
       transition: background 0.15s;
     }
-    .range-btn:hover { background: #d0d0d0; }
-    .range-btn.active {
-      background: #555;
-      color: #fff;
-      border-color: #444;
-    }
+    .range-btn:hover  { background: #d0d0d0; }
+    .range-btn.active { background: #555; color: #fff; border-color: #444; }
 
+    /* ---- Charts ---- */
     .charts-wrapper {
       padding: 20px;
       display: flex;
@@ -95,103 +86,76 @@
       background: #efefef;
       border-bottom: 1px solid #ccc;
       display: flex;
-      align-items: center;
-      gap: 16px;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-
-    .chart-panel-header .sensor-label {
+    .sensor-label {
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #555;
     }
+    .current-temp { font-size: 24px; font-weight: 700; color: #cc3300; }
+    .current-hum  { font-size: 24px; font-weight: 700; color: #2a7a2a; }
+    .stat-label   { font-size: 11px; color: #888; margin-left: 2px; }
 
-    .chart-panel-header .current-val {
-      font-size: 22px;
-      font-weight: 700;
-      color: #222;
+    .stat-group { display: flex; gap: 16px; margin-left: auto; flex-wrap: wrap; }
+    .stat-item  {
+      font-size: 11px; color: #666;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px;
     }
+    .stat-item strong { font-size: 13px; color: #333; }
 
-    .chart-panel-header .current-humidity {
-      font-size: 22px;
-      font-weight: 700;
-      color: #2a7a2a;
-      margin-left: 8px;
-    }
+    .chart-body { padding: 10px 12px 14px; height: 200px; position: relative; }
 
-    .chart-panel-header .update-time {
-      font-size: 11px;
+    /* ---- Empty state ---- */
+    .no-data {
+      text-align: center;
+      padding: 50px 20px;
       color: #888;
-      margin-left: auto;
-    }
-
-    .chart-body {
-      padding: 12px 16px 16px;
-      position: relative;
-      height: 220px;
-    }
-
-    .chart-body canvas {
-      width: 100% !important;
-    }
-
-    #loading {
-      text-align: center;
-      padding: 60px 20px;
-      color: #666;
-      font-size: 15px;
-    }
-
-    #error-msg {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-      color: #a00;
       font-size: 14px;
     }
-
-    .legend-row {
-      display: flex;
-      gap: 16px;
-      padding: 6px 16px 10px;
-      font-size: 11px;
-      color: #555;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .legend-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
+    .no-data strong { display: block; font-size: 16px; color: #555; margin-bottom: 8px; }
   </style>
 </head>
 <body>
 
 <header>
-  <a href="index.html">← Retour</a>
+  <a href="index.html" class="back-btn">← Retour</a>
   <h1 id="page-title">Graphique</h1>
+  <span class="last-update" id="last-update"></span>
 </header>
 
 <div class="range-bar">
   <span>Période :</span>
+  <button class="range-btn" data-hours="6">6h</button>
   <button class="range-btn" data-hours="12">12h</button>
   <button class="range-btn active" data-hours="48">48h</button>
   <button class="range-btn" data-hours="168">7j</button>
+  <button class="range-btn" data-hours="0">Tout</button>
 </div>
 
-<div id="loading">Chargement des données…</div>
-<div id="error-msg"></div>
-<div class="charts-wrapper" id="charts-wrapper" style="display:none;"></div>
+<div class="charts-wrapper" id="charts-wrapper"></div>
 
 <script>
-// ---------------------------------------------------------------------------
-// Parse URL params
-// ---------------------------------------------------------------------------
+// =============================================================================
+// Sensor metadata (mirrors index.html)
+// =============================================================================
+var SENSORS = {
+  outside:    { label: 'Extérieur', hasHum: false },
+  pool:       { label: 'Piscine',   hasHum: true  },
+  upstairs:   { label: 'En haut',   hasHum: true  },
+  downstairs: { label: 'En bas',    hasHum: true  },
+  kitchen:    { label: 'Cuisine',   hasHum: true  },
+  garage:     { label: 'Garage',    hasHum: true  }
+};
+
+// =============================================================================
+// Parse sensor ID from URL
+// =============================================================================
 var params = (function() {
   var p = {}, pairs = window.location.search.slice(1).split('&');
   pairs.forEach(function(pair) {
@@ -201,128 +165,177 @@ var params = (function() {
   return p;
 })();
 
-var LABEL      = params.label    || 'Capteur';
-var UUID       = params.uuid     || '';
-var YOLINK     = params.yolink   || '';
-var HAS_HUM    = params.humidity !== 'false';
-var HOURS      = 48;
-var WORKER_URL = "https://fragrant-disk-2d6f.d-e29.workers.dev";
+var sensorId = params.id || '';
+var cfg      = SENSORS[sensorId];
 
-document.getElementById('page-title').textContent = LABEL;
-document.title = 'Graphique — ' + LABEL;
-
-// ---------------------------------------------------------------------------
-// WirelessTag date helpers  (/Date(ms+offset)/ format)
-// ---------------------------------------------------------------------------
-function toWLDate(d) {
-  return '/Date(' + d.getTime() + '-0000)/';
+if (cfg) {
+  document.getElementById('page-title').textContent = cfg.label;
+  document.title = 'Graphique — ' + cfg.label;
+} else {
+  document.getElementById('page-title').textContent = 'Capteur inconnu';
 }
 
-function parseWLDate(s) {
-  // "/Date(1234567890000)/" or "/Date(1234567890000-0500)/"
-  var m = /\/Date\((-?\d+)/.exec(s);
-  return m ? new Date(parseInt(m[1], 10)) : new Date(s);
+var currentHours = 48;
+var chartInstances = [];
+
+// =============================================================================
+// Load + filter history from localStorage
+// =============================================================================
+function loadHistory(hours) {
+  try {
+    var raw = localStorage.getItem('sensorHistory_' + sensorId);
+    if (!raw) return [];
+    var all = JSON.parse(raw);
+    if (!hours) return all;  // 0 = show everything
+    var cutoff = Date.now() - hours * 3600000;
+    return all.filter(function(p) { return p.t >= cutoff; });
+  } catch(e) { return []; }
 }
 
-// ---------------------------------------------------------------------------
-// Chart rendering
-// ---------------------------------------------------------------------------
-function renderCharts(tempPoints, humPoints) {
-  $('#loading').hide();
-  if (!tempPoints || tempPoints.length === 0) {
-    showError('Aucune donnée disponible pour cette période.');
+// =============================================================================
+// Format timestamp for chart labels
+// =============================================================================
+function fmtLabel(ms, hours) {
+  var d = new Date(ms);
+  if (hours <= 24) {
+    return d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+  }
+  return d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric' })
+       + ' ' + d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+}
+
+// =============================================================================
+// Statistics helpers
+// =============================================================================
+function stats(vals) {
+  if (!vals.length) return { min: null, max: null, avg: null };
+  var min = vals[0], max = vals[0], sum = 0;
+  vals.forEach(function(v) { if (v < min) min = v; if (v > max) max = v; sum += v; });
+  return { min: min, max: max, avg: sum / vals.length };
+}
+
+// =============================================================================
+// Render everything
+// =============================================================================
+function render(hours) {
+  // Destroy previous charts
+  chartInstances.forEach(function(c) { c.destroy(); });
+  chartInstances = [];
+
+  var wrapper = document.getElementById('charts-wrapper');
+  wrapper.innerHTML = '';
+
+  var points = loadHistory(hours);
+
+  if (!points.length) {
+    wrapper.innerHTML = '<div class="no-data">'
+      + '<strong>Aucune donnée disponible</strong>'
+      + 'Les données s\'accumulent à chaque rafraîchissement de 15 min sur la page principale.<br>'
+      + 'Revenez après quelques cycles pour voir les graphiques.'
+      + '</div>';
+    document.getElementById('last-update').textContent = '';
     return;
   }
 
-  var wrapper = $('#charts-wrapper');
-  wrapper.empty().show();
+  // Last-update timestamp
+  var lastPt  = points[points.length - 1];
+  var lastDate = new Date(lastPt.t);
+  document.getElementById('last-update').textContent =
+    'Dernière lecture: ' + lastDate.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric' })
+    + ' ' + lastDate.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
 
-  // Temperature chart
-  var tempLabels = tempPoints.map(function(p) { return p.t; });
-  var tempVals   = tempPoints.map(function(p) { return p.v; });
-  var latestTemp = tempVals[tempVals.length - 1];
-  var latestTime = tempPoints[tempPoints.length - 1].t;
+  var labels   = points.map(function(p) { return fmtLabel(p.t, hours); });
+  var tempVals = points.map(function(p) { return p.temp; });
+  var humVals  = points.map(function(p) { return p.hum; });
+  var hasHum   = cfg && cfg.hasHum && humVals.some(function(v) { return v !== null; });
 
-  var tempPanel = buildPanel(
-    LABEL,
-    latestTemp !== undefined ? latestTemp.toFixed(1) + ' °C' : '—',
-    humPoints && humPoints.length ? (humPoints[humPoints.length-1].v.toFixed(1) + ' %') : null,
-    latestTime,
-    [
-      {
-        label: 'Température (°C)',
-        data: tempVals,
-        borderColor: '#cc3300',
-        backgroundColor: 'rgba(204,51,0,0.08)',
-        yAxisLabel: '°C'
-      }
-    ],
-    tempLabels,
-    'temp-chart'
-  );
-  wrapper.append(tempPanel);
+  var tempStats = stats(tempVals);
+  var humStats  = hasHum ? stats(humVals.filter(function(v) { return v !== null; })) : null;
 
-  initChart('temp-chart', tempLabels, [
-    {
-      label: 'Température (°C)',
-      data: tempVals,
-      borderColor: '#cc3300',
-      backgroundColor: 'rgba(204,51,0,0.07)',
-      tension: 0.3,
-      pointRadius: 0,
-      borderWidth: 2,
-      fill: true
-    }
-  ], '°C');
+  // ---- Temperature panel ----
+  var tempPanel = makePanelEl({
+    label: cfg ? cfg.label : sensorId,
+    current: lastPt.temp !== null ? lastPt.temp.toFixed(1) + ' °C' : '—',
+    currentClass: 'current-temp',
+    statLabel: '°C',
+    statsObj: tempStats,
+    canvasId: 'chart-temp'
+  });
+  wrapper.appendChild(tempPanel);
 
-  // Humidity chart (if available)
-  if (humPoints && humPoints.length) {
-    var humLabels = humPoints.map(function(p) { return p.t; });
-    var humVals   = humPoints.map(function(p) { return p.v; });
+  var tempCtx = document.getElementById('chart-temp').getContext('2d');
+  chartInstances.push(makeChart(tempCtx, labels, tempVals, {
+    color: '#cc3300',
+    fill: 'rgba(204,51,0,0.07)',
+    unit: '°C',
+    label: 'Température'
+  }));
 
-    var humPanel = buildPanel(
-      LABEL + ' — Humidité',
-      null, null, null,
-      null, null, 'hum-chart'
-    );
-    wrapper.append(humPanel);
+  // ---- Humidity panel ----
+  if (hasHum) {
+    var humPanel = makePanelEl({
+      label: (cfg ? cfg.label : sensorId) + ' — Humidité',
+      current: lastPt.hum !== null ? lastPt.hum.toFixed(1) + ' %' : '—',
+      currentClass: 'current-hum',
+      statLabel: '%',
+      statsObj: humStats,
+      canvasId: 'chart-hum'
+    });
+    wrapper.appendChild(humPanel);
 
-    initChart('hum-chart', humLabels, [
-      {
-        label: 'Humidité (%)',
-        data: humVals,
-        borderColor: '#2a7a2a',
-        backgroundColor: 'rgba(42,122,42,0.07)',
-        tension: 0.3,
-        pointRadius: 0,
-        borderWidth: 2,
-        fill: true
-      }
-    ], '%');
+    var humCtx = document.getElementById('chart-hum').getContext('2d');
+    chartInstances.push(makeChart(humCtx, labels, humVals, {
+      color: '#2a7a2a',
+      fill: 'rgba(42,122,42,0.07)',
+      unit: '%',
+      label: 'Humidité'
+    }));
   }
 }
 
-function buildPanel(title, tempStr, humStr, timeStr, datasets, labels, canvasId) {
-  var headerHtml = '<div class="chart-panel-header">' +
-    '<span class="sensor-label">' + escHtml(title) + '</span>';
-  if (tempStr)  headerHtml += '<span class="current-val">' + escHtml(tempStr) + '</span>';
-  if (humStr)   headerHtml += '<span class="current-humidity">' + escHtml(humStr) + '</span>';
-  if (timeStr)  headerHtml += '<span class="update-time">Mise à jour: <b>' + formatTime(timeStr) + '</b></span>';
-  headerHtml += '</div>';
+// =============================================================================
+// DOM helpers
+// =============================================================================
+function makePanelEl(opts) {
+  var s = opts.statsObj;
+  var statsHtml = '';
+  if (s && s.min !== null) {
+    statsHtml = '<div class="stat-group">'
+      + '<div class="stat-item"><span>Min</span><strong>' + s.min.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
+      + '<div class="stat-item"><span>Moy</span><strong>' + s.avg.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
+      + '<div class="stat-item"><span>Max</span><strong>' + s.max.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
+      + '</div>';
+  }
 
-  return $(
-    '<div class="chart-panel">' +
-      headerHtml +
-      '<div class="chart-body"><canvas id="' + canvasId + '"></canvas></div>' +
-    '</div>'
-  );
+  var div = document.createElement('div');
+  div.className = 'chart-panel';
+  div.innerHTML =
+    '<div class="chart-panel-header">'
+      + '<span class="sensor-label">' + esc(opts.label) + '</span>'
+      + '<span class="' + opts.currentClass + '">' + esc(opts.current) + '</span>'
+      + statsHtml
+    + '</div>'
+    + '<div class="chart-body"><canvas id="' + opts.canvasId + '"></canvas></div>';
+  return div;
 }
 
-function initChart(canvasId, labels, datasets, unit) {
-  var ctx = document.getElementById(canvasId).getContext('2d');
-  new Chart(ctx, {
+function makeChart(ctx, labels, data, style) {
+  return new Chart(ctx, {
     type: 'line',
-    data: { labels: labels, datasets: datasets },
+    data: {
+      labels: labels,
+      datasets: [{
+        label: style.label,
+        data: data,
+        borderColor: style.color,
+        backgroundColor: style.fill,
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+        fill: true,
+        spanGaps: true
+      }]
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -333,11 +346,12 @@ function initChart(canvasId, labels, datasets, unit) {
           backgroundColor: 'rgba(255,255,255,0.95)',
           borderColor: '#ccc',
           borderWidth: 1,
-          titleColor: '#333',
+          titleColor: '#444',
           bodyColor: '#333',
           callbacks: {
             label: function(ctx) {
-              return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' ' + unit;
+              var v = ctx.parsed.y;
+              return v !== null ? style.label + ': ' + v.toFixed(1) + ' ' + style.unit : '';
             }
           }
         }
@@ -347,7 +361,7 @@ function initChart(canvasId, labels, datasets, unit) {
           ticks: {
             color: '#888',
             font: { size: 10 },
-            maxTicksLimit: 12,
+            maxTicksLimit: 10,
             maxRotation: 0
           },
           grid: { color: 'rgba(0,0,0,0.06)' }
@@ -356,7 +370,7 @@ function initChart(canvasId, labels, datasets, unit) {
           ticks: {
             color: '#888',
             font: { size: 10 },
-            callback: function(v) { return v.toFixed(0) + ' ' + unit; }
+            callback: function(v) { return v.toFixed(0) + ' ' + style.unit; }
           },
           grid: { color: 'rgba(0,0,0,0.06)' }
         }
@@ -365,241 +379,26 @@ function initChart(canvasId, labels, datasets, unit) {
   });
 }
 
-function formatTime(d) {
-  if (!(d instanceof Date)) d = new Date(d);
-  if (isNaN(d)) return '—';
-  return d.toLocaleString('fr-CA', { month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit' });
-}
-
-function escHtml(s) {
+function esc(s) {
   return String(s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function showError(msg) {
-  $('#loading').hide();
-  $('#error-msg').text(msg).show();
-}
-
-// ---------------------------------------------------------------------------
-// Data fetching — WirelessTag
-// ---------------------------------------------------------------------------
-function fetchWirelessTag(uuid, hours) {
-  var now  = new Date();
-  var from = new Date(now.getTime() - hours * 3600000);
-
-  $.ajax({
-    url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetTemperatureRawData2',
-    type: 'POST',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    data: JSON.stringify({
-      uuid: uuid,
-      fromDate: toWLDate(from),
-      toDate:   toWLDate(now)
-    }),
-    success: function(retval) {
-      var rows = retval.d;
-      if (!rows || !rows.length) {
-        // Fallback to GetLatestTemperatureRawDataByUUID if no history
-        fetchWirelessTagLatest(uuid);
-        return;
-      }
-      var tempPts = [], humPts = [];
-      rows.forEach(function(r) {
-        var t = parseWLDate(r.time);
-        var label = t.toLocaleString('fr-CA', {
-          month: 'short', day: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-        var temp = r.temp_degC;
-        if (HAS_HUM && r.cap !== undefined) {
-          // Upstairs/downstairs sensors have +1 correction in main page
-          var corrected = (LABEL.indexOf('haut') !== -1 || LABEL.indexOf('bas') !== -1)
-            ? temp + 1 : temp;
-          tempPts.push({ t: label, v: corrected });
-          humPts.push({ t: label, v: r.cap });
-        } else {
-          tempPts.push({ t: label, v: temp });
-        }
-      });
-      renderCharts(tempPts, HAS_HUM ? humPts : null);
-    },
-    error: function() {
-      // Try alternate endpoint name
-      fetchWirelessTagAlt(uuid, from, now);
-    }
-  });
-}
-
-function fetchWirelessTagAlt(uuid, from, now) {
-  $.ajax({
-    url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetTemperatureRawData',
-    type: 'POST',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    data: JSON.stringify({
-      uuid: uuid,
-      fromDate: toWLDate(from),
-      toDate:   toWLDate(now)
-    }),
-    success: function(retval) {
-      var rows = retval.d;
-      if (!rows || !rows.length) { fetchWirelessTagLatest(uuid); return; }
-      var tempPts = [], humPts = [];
-      rows.forEach(function(r) {
-        var t = parseWLDate(r.time);
-        var label = t.toLocaleString('fr-CA', {
-          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-        var needCorr = (LABEL.indexOf('haut') !== -1 || LABEL.indexOf('bas') !== -1);
-        var temp = needCorr ? r.temp_degC + 1 : r.temp_degC;
-        tempPts.push({ t: label, v: temp });
-        if (HAS_HUM && r.cap !== undefined) humPts.push({ t: label, v: r.cap });
-      });
-      renderCharts(tempPts, HAS_HUM ? humPts : null);
-    },
-    error: function() { fetchWirelessTagLatest(uuid); }
-  });
-}
-
-function fetchWirelessTagLatest(uuid) {
-  // Last-resort: show single latest point
-  $.ajax({
-    url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID',
-    type: 'POST',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    data: JSON.stringify({ uuid: uuid }),
-    success: function(retval) {
-      var d = retval.d;
-      if (!d) { showError('Données indisponibles.'); return; }
-      var t = new Date(d.time);
-      var label = t.toLocaleString('fr-CA', {
-        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
-      var needCorr = (LABEL.indexOf('haut') !== -1 || LABEL.indexOf('bas') !== -1);
-      var temp = needCorr ? d.temp_degC + 1 : d.temp_degC;
-      var tempPts = [{ t: label, v: temp }];
-      var humPts  = (HAS_HUM && d.cap !== undefined) ? [{ t: label, v: d.cap }] : null;
-      renderCharts(tempPts, humPts);
-    },
-    error: function() { showError('Impossible de contacter le serveur WirelessTag.'); }
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Data fetching — YoLink
-// ---------------------------------------------------------------------------
-function yolinkApi(accessToken, body, cb) {
-  $.ajax({
-    url: WORKER_URL + '?action=api&token=' + encodeURIComponent(accessToken),
-    type: 'POST',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    data: JSON.stringify(body),
-    success: cb,
-    error: function() { cb(null); }
-  });
-}
-
-function fetchYoLink(deviceName, hours) {
-  $.ajax({
-    url: WORKER_URL + '?action=token',
-    type: 'POST',
-    contentType: 'application/x-www-form-urlencoded',
-    dataType: 'json',
-    success: function(tokenData) {
-      var accessToken = tokenData.access_token;
-      // Get device list
-      yolinkApi(accessToken, { method: 'Home.getDeviceList' }, function(retval) {
-        if (!retval) { showError('Erreur liste appareils YoLink.'); return; }
-        var match = null;
-        $.each(retval.data.devices, function(i, dev) {
-          if (dev.name === deviceName) { match = dev; return false; }
-        });
-        if (!match) {
-          showError('Capteur YoLink introuvable: "' + deviceName + '"');
-          return;
-        }
-
-        // Try to get historical data
-        var now  = Math.floor(Date.now() / 1000);
-        var from = now - hours * 3600;
-        yolinkApi(accessToken, {
-          method: 'THSensor.getDataHistory',
-          targetDevice: match.deviceId,
-          token: match.token,
-          params: { startTime: from, endTime: now, limit: 1000 }
-        }, function(histRetval) {
-          if (histRetval && histRetval.data && histRetval.data.records && histRetval.data.records.length) {
-            var records = histRetval.data.records;
-            var tempPts = [], humPts = [];
-            records.forEach(function(r) {
-              var t = new Date(r.createdAt * 1000);
-              var label = t.toLocaleString('fr-CA', {
-                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-              });
-              if (r.temperature !== undefined) tempPts.push({ t: label, v: r.temperature });
-              if (HAS_HUM && r.humidity !== undefined) humPts.push({ t: label, v: r.humidity });
-            });
-            renderCharts(tempPts, HAS_HUM ? humPts : null);
-          } else {
-            // Fallback: current state only
-            yolinkApi(accessToken, {
-              method: 'THSensor.getState',
-              targetDevice: match.deviceId,
-              token: match.token
-            }, function(stateRetval) {
-              if (!stateRetval) { showError('Erreur de lecture YoLink.'); return; }
-              var state = stateRetval.data.state;
-              var t = new Date(stateRetval.data.reportAt);
-              var label = t.toLocaleString('fr-CA', {
-                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-              });
-              var tempPts = [{ t: label, v: state.temperature }];
-              var humPts  = (HAS_HUM && state.humidity !== undefined)
-                ? [{ t: label, v: state.humidity }] : null;
-              renderCharts(tempPts, humPts);
-            });
-          }
-        });
-      });
-    },
-    error: function() { showError("Erreur d'authentification YoLink."); }
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Load data based on sensor type
-// ---------------------------------------------------------------------------
-function load(hours) {
-  $('#loading').text('Chargement des données…').show();
-  $('#error-msg').hide();
-  $('#charts-wrapper').hide().empty();
-  if (UUID) {
-    fetchWirelessTag(UUID, hours);
-  } else if (YOLINK) {
-    fetchYoLink(YOLINK, hours);
-  } else {
-    showError('Aucun capteur spécifié.');
-  }
-}
-
-// ---------------------------------------------------------------------------
+// =============================================================================
 // Range buttons
-// ---------------------------------------------------------------------------
-$(document).ready(function() {
-  $('.range-btn').on('click', function() {
-    $('.range-btn').removeClass('active');
-    $(this).addClass('active');
-    HOURS = parseInt($(this).data('hours'), 10);
-    load(HOURS);
+// =============================================================================
+document.querySelectorAll('.range-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.range-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentHours = parseInt(btn.dataset.hours, 10);
+    render(currentHours);
   });
-  load(HOURS);
 });
+
+// Initial render
+render(currentHours);
 </script>
 </body>
 </html>
