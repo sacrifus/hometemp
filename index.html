@@ -137,10 +137,20 @@ function showReading(sensorId, temp, hum, time) {
     timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  // Pool displays in °F; all other sensors display in °C.
+  var displayTemp, unit;
+  if (sensorId === 'pool') {
+    displayTemp = temp * 9 / 5 + 32;
+    unit = '&deg;F';
+  } else {
+    displayTemp = temp;
+    unit = '&deg;C';
+  }
+
   var html = '<b>' + cfg.label + ': </b>'
     + '<span class="temp full">'
-    + temp.toFixed(1)
-    + '<span class="sup">&deg;C</span>&nbsp;&nbsp;&nbsp;</span>';
+    + displayTemp.toFixed(1)
+    + '<span class="sup">' + unit + '</span>&nbsp;&nbsp;&nbsp;</span>';
 
   if (hum !== null && hum !== undefined && cfg.hasHum) {
     html += 'Humidité: <b>' + hum.toFixed(1) + '%</b>';
