@@ -179,8 +179,6 @@ function fetchWirelessTag(sensorId) {
     success: function(retval) {
       var d = retval.d;
       var temp = d.temp_degC;
-      // Upstairs / downstairs sensors have a +1°C calibration offset
-      if (sensorId === 'upstairs' || sensorId === 'downstairs') temp += 1;
       var hum  = (d.cap !== undefined && SENSORS[sensorId].hasHum) ? d.cap : null;
       var time = new Date();  // use now as the timestamp for the stored reading
 
