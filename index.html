@@ -32,11 +32,10 @@
       text-align: center;
     }
     #cto-signal-card {
-      display: inline-block;
       background: #1a1d24;
       border-radius: 12px;
       padding: 28px 40px;
-      min-width: 280px;
+      min-width: 260px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.35);
     }
     #cto-signal-card h3 {
@@ -52,25 +51,26 @@
       color: #ccc;
       margin-bottom: 18px;
     }
-    #cto-signal {
+    #cto-signal-btc,
+    #cto-signal-eth {
       font-size: 3.2rem;
       font-weight: 800;
       letter-spacing: 3px;
       margin: 10px 0;
       text-transform: uppercase;
     }
-    #cto-signal.buy    { color: #00c853; text-shadow: 0 0 20px rgba(0,200,83,0.35); }
-    #cto-signal.sell   { color: #ff1744; text-shadow: 0 0 20px rgba(255,23,68,0.35); }
-    #cto-signal.neutral{ color: #9e9e9e; }
-    #cto-signal.loading,
-    #cto-signal.error  { color: #666; font-size: 1.3rem; letter-spacing: 1px; }
-    #cto-meta {
+    #cto-signal-btc.buy,    #cto-signal-eth.buy    { color: #00c853; text-shadow: 0 0 20px rgba(0,200,83,0.35); }
+    #cto-signal-btc.sell,   #cto-signal-eth.sell   { color: #ff1744; text-shadow: 0 0 20px rgba(255,23,68,0.35); }
+    #cto-signal-btc.neutral,#cto-signal-eth.neutral{ color: #9e9e9e; }
+    #cto-signal-btc.loading,#cto-signal-eth.loading,
+    #cto-signal-btc.error,  #cto-signal-eth.error  { color: #666; font-size: 1.3rem; letter-spacing: 1px; }
+    .cto-meta {
       font-size: 0.85rem;
       color: #666;
       margin-top: 16px;
       line-height: 1.55;
     }
-    #cto-meta strong { color: #aaa; }
+    .cto-meta strong { color: #aaa; }
   </style>
 </head>
 <body class="homepage">
@@ -120,13 +120,26 @@
       </div>
     </div>
 
-    <!-- CTO Line Signal (BTCUSD 1D) -->
+    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D) -->
     <div id="cto-signal-section">
-      <div id="cto-signal-card">
-        <h3>CTO LINE SIGNAL</h3>
-        <div class="pair">BTCUSD · 1D</div>
-        <div id="cto-signal" class="loading">Loading…</div>
-        <div id="cto-meta"></div>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
+        
+        <!-- BTC Card -->
+        <div id="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">BTCUSD · 1D</div>
+          <div id="cto-signal-btc" class="loading">Loading…</div>
+          <div id="cto-meta-btc" class="cto-meta"></div>
+        </div>
+
+        <!-- ETH Card -->
+        <div id="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">ETHUSD · 1D</div>
+          <div id="cto-signal-eth" class="loading">Loading…</div>
+          <div id="cto-meta-eth" class="cto-meta"></div>
+        </div>
+
       </div>
     </div>
 
@@ -304,7 +317,7 @@ $.ajax({
 });
 
 // =============================================================================
-// CTO Line Signal – BTCUSD 1D
+// CTO Line Signals – BTCUSD + ETHUSD 1D
 // =============================================================================
 function smma(src, length) {
   var result = new Array(src.length).fill(NaN);
@@ -316,7 +329,7 @@ function smma(src, length) {
     }
     if (i === length - 1) {
       sum += src[i];
-      result[i] = sum / length;          // first value = SMA
+      result[i] = sum / length;
     } else {
       result[i] = (result[i - 1] * (length - 1) + src[i]) / length;
     }
@@ -324,11 +337,11 @@ function smma(src, length) {
   return result;
 }
 
-function fetchCtoSignal() {
-  var signalEl = document.getElementById('cto-signal');
-  var metaEl   = document.getElementById('cto-meta');
+function fetchCtoSignal(symbol, signalId, metaId) {
+  var signalEl = document.getElementById(signalId);
+  var metaEl   = document.getElementById(metaId);
 
-  fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100')
+  fetch('https://api.binance.com/api/v3/klines?symbol=' + symbol + '&interval=1d&limit=100')
     .then(function(res) {
       if (!res.ok) throw new Error('Network error');
       return res.json();
@@ -387,8 +400,9 @@ function fetchCtoSignal() {
     });
 }
 
-// Run once on load (page already refreshes every 15 min via meta tag)
-fetchCtoSignal();
+// Run both on load
+fetchCtoSignal('BTCUSDT', 'cto-signal-btc', 'cto-meta-btc');
+fetchCtoSignal('ETHUSDT', 'cto-signal-eth', 'cto-meta-eth');
 </script>
 </body>
 </html>
