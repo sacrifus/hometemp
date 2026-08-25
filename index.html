@@ -24,13 +24,59 @@
   </noscript>
   <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
   <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+
+  <!-- CTO Signal styles -->
+  <style>
+    #cto-signal-section {
+      margin-top: 4em;
+      text-align: center;
+    }
+    #cto-signal-card {
+      display: inline-block;
+      background: #1a1d24;
+      border-radius: 12px;
+      padding: 28px 40px;
+      min-width: 280px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    #cto-signal-card h3 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #888;
+      margin: 0 0 6px 0;
+      letter-spacing: 1px;
+    }
+    #cto-signal-card .pair {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ccc;
+      margin-bottom: 18px;
+    }
+    #cto-signal {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin: 10px 0;
+      text-transform: uppercase;
+    }
+    #cto-signal.buy    { color: #00c853; text-shadow: 0 0 20px rgba(0,200,83,0.35); }
+    #cto-signal.sell   { color: #ff1744; text-shadow: 0 0 20px rgba(255,23,68,0.35); }
+    #cto-signal.neutral{ color: #9e9e9e; }
+    #cto-signal.loading,
+    #cto-signal.error  { color: #666; font-size: 1.3rem; letter-spacing: 1px; }
+    #cto-meta {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 16px;
+      line-height: 1.55;
+    }
+    #cto-meta strong { color: #aaa; }
+  </style>
 </head>
 <body class="homepage">
-
 <!-- Main -->
 <div id="main">
   <div class="container">
-
     <!-- Row 1 -->
     <div class="row">
       <div class="3u">
@@ -58,7 +104,6 @@
         </section>
       </div>
     </div>
-
     <!-- Row 2 -->
     <div class="row" style="margin-top: 15em;">
       <div class="3u">
@@ -72,6 +117,16 @@
           <a href="graph.html?id=garage" class="image full"><img src="images/outside.jpg" alt="" /></a>
           <p id="output-garage">Chargement YoLink...</p>
         </section>
+      </div>
+    </div>
+
+    <!-- CTO Line Signal (BTCUSD 1D) -->
+    <div id="cto-signal-section">
+      <div id="cto-signal-card">
+        <h3>CTO LINE SIGNAL</h3>
+        <div class="pair">BTCUSD · 1D</div>
+        <div id="cto-signal" class="loading">Loading…</div>
+        <div id="cto-meta"></div>
       </div>
     </div>
 
@@ -91,24 +146,19 @@ var SENSORS = {
   kitchen:    { label: 'Cuisine',   hasHum: true  },
   garage:     { label: 'Garage',    hasHum: true  }
 };
-
 var WIRELESSTAG_UUIDS = {
   outside:    '0f6ff5d2-dfa2-493e-893e-c9de8e50bfb0',
   upstairs:   'c579d742-9d4d-49e2-b979-720099ea52f2',
   downstairs: '066701db-0e8e-4eac-9507-0ff1659fcb01'
 };
-
 var YOLINK_DEVICES = {
   pool:    'Pool',
   kitchen: 'Kitchen',
   garage:  'Garage'
 };
-
 var WORKER_URL = 'https://fragrant-disk-2d6f.d-e29.workers.dev';
-
 // Keep 10 days of 15-min readings = 10 * 24 * 4 = 960 points max per sensor
 var MAX_POINTS = 960;
-
 // =============================================================================
 // localStorage helpers
 // =============================================================================
@@ -121,7 +171,6 @@ function saveReading(sensorId, temp, hum) {
     localStorage.setItem(key, JSON.stringify(history));
   } catch(e) { /* quota exceeded or private browsing — silently skip */ }
 }
-
 // =============================================================================
 // Display helpers
 // =============================================================================
@@ -130,13 +179,11 @@ function showReading(sensorId, temp, hum, time) {
   if (!cfg) return;
   var el = document.getElementById('output-' + sensorId);
   if (!el) return;
-
   var timeStr = '';
   if (time) {
     var d = (time instanceof Date) ? time : new Date(time);
     timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
-
   // Pool displays in °F; all other sensors display in °C.
   var displayTemp, unit;
   if (sensorId === 'pool') {
@@ -146,21 +193,17 @@ function showReading(sensorId, temp, hum, time) {
     displayTemp = temp;
     unit = '&deg;C';
   }
-
   var html = '<b>' + cfg.label + ': </b>'
     + '<span class="temp full">'
     + displayTemp.toFixed(1)
     + '<span class="sup">' + unit + '</span>&nbsp;&nbsp;&nbsp;</span>';
-
   if (hum !== null && hum !== undefined && cfg.hasHum) {
     html += 'Humidité: <b>' + hum.toFixed(1) + '%</b>';
   } else if (timeStr) {
     html += 'Mise à jour: <b>' + timeStr + '</b>';
   }
-
   el.innerHTML = html;
 }
-
 // =============================================================================
 // WirelessTag fetching
 // =============================================================================
@@ -171,7 +214,6 @@ $.ajaxSetup({
   dataType: 'json',
   xhrFields: { withCredentials: false }
 });
-
 function fetchWirelessTag(sensorId) {
   $.ajax({
     url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID',
@@ -181,7 +223,6 @@ function fetchWirelessTag(sensorId) {
       var temp = d.temp_degC;
       var hum  = (d.cap !== undefined && SENSORS[sensorId].hasHum) ? d.cap : null;
       var time = new Date();  // use now as the timestamp for the stored reading
-
       showReading(sensorId, temp, hum, time);
       saveReading(sensorId, temp, hum);
     },
@@ -191,11 +232,9 @@ function fetchWirelessTag(sensorId) {
     }
   });
 }
-
 fetchWirelessTag('outside');
 fetchWirelessTag('upstairs');
 fetchWirelessTag('downstairs');
-
 // =============================================================================
 // YoLink fetching
 // =============================================================================
@@ -210,7 +249,6 @@ function yolinkApi(accessToken, body, cb) {
     error: function() { cb(null); }
   });
 }
-
 $.ajax({
   url: WORKER_URL + '?action=token',
   type: 'POST',
@@ -218,7 +256,6 @@ $.ajax({
   dataType: 'json',
   success: function(tokenData) {
     var accessToken = tokenData.access_token;
-
     yolinkApi(accessToken, { method: 'Home.getDeviceList' }, function(retval) {
       if (!retval) {
         $.each(YOLINK_DEVICES, function(sensorId) {
@@ -227,21 +264,17 @@ $.ajax({
         });
         return;
       }
-
       var devices = retval.data.devices;
-
       $.each(YOLINK_DEVICES, function(sensorId, deviceName) {
         var match = null;
         $.each(devices, function(i, dev) {
           if (dev.name === deviceName) { match = dev; return false; }
         });
-
         if (!match) {
           var el = document.getElementById('output-' + sensorId);
           if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Capteur introuvable';
           return;
         }
-
         yolinkApi(accessToken, {
           method: 'THSensor.getState',
           targetDevice: match.deviceId,
@@ -256,7 +289,6 @@ $.ajax({
           var temp  = state.temperature;
           var hum   = (state.humidity !== undefined && SENSORS[sensorId].hasHum)
                         ? state.humidity : null;
-
           showReading(sensorId, temp, hum, new Date());
           saveReading(sensorId, temp, hum);
         });
@@ -270,6 +302,93 @@ $.ajax({
     });
   }
 });
+
+// =============================================================================
+// CTO Line Signal – BTCUSD 1D
+// =============================================================================
+function smma(src, length) {
+  var result = new Array(src.length).fill(NaN);
+  var sum = 0;
+  for (var i = 0; i < src.length; i++) {
+    if (i < length - 1) {
+      sum += src[i];
+      continue;
+    }
+    if (i === length - 1) {
+      sum += src[i];
+      result[i] = sum / length;          // first value = SMA
+    } else {
+      result[i] = (result[i - 1] * (length - 1) + src[i]) / length;
+    }
+  }
+  return result;
+}
+
+function fetchCtoSignal() {
+  var signalEl = document.getElementById('cto-signal');
+  var metaEl   = document.getElementById('cto-meta');
+
+  fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100')
+    .then(function(res) {
+      if (!res.ok) throw new Error('Network error');
+      return res.json();
+    })
+    .then(function(data) {
+      var hl2 = data.map(function(c) {
+        return (parseFloat(c[2]) + parseFloat(c[3])) / 2;
+      });
+
+      var v1 = smma(hl2, 15);
+      var m1 = smma(hl2, 19);
+      var m2 = smma(hl2, 25);
+      var v2 = smma(hl2, 29);
+
+      var i = hl2.length - 1;
+
+      var p2 = (v1[i] < m1[i]) !== (v1[i] < v2[i]) || (m2[i] < v2[i]) !== (v1[i] < v2[i]);
+      var p3 = !p2 && (v1[i] < v2[i]);
+      var p1 = !p2 && !p3;
+
+      var text, cls, colorName;
+      if (p1) {
+        text = 'BUY';
+        cls  = 'buy';
+        colorName = 'Orange';
+      } else if (p2) {
+        text = 'NEUTRAL';
+        cls  = 'neutral';
+        colorName = 'Silver / Gray';
+      } else {
+        text = 'SELL';
+        cls  = 'sell';
+        colorName = 'Navy / Blue';
+      }
+
+      signalEl.textContent = text;
+      signalEl.className = cls;
+
+      var lastClose = parseFloat(data[i][4]).toLocaleString('en-US', {
+        style: 'currency', currency: 'USD', maximumFractionDigits: 0
+      });
+      var time = new Date(data[i][0]).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric'
+      });
+
+      metaEl.innerHTML =
+        '<strong>Color:</strong> ' + colorName + '<br>' +
+        '<strong>Last daily close:</strong> ' + lastClose + '<br>' +
+        '<strong>Bar date:</strong> ' + time + '<br>' +
+        'Updated: ' + new Date().toLocaleTimeString();
+    })
+    .catch(function(err) {
+      signalEl.textContent = 'Error';
+      signalEl.className = 'error';
+      metaEl.textContent = err.message + ' – will retry on next page refresh';
+    });
+}
+
+// Run once on load (page already refreshes every 15 min via meta tag)
+fetchCtoSignal();
 </script>
 </body>
 </html>
