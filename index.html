@@ -28,7 +28,7 @@
   <!-- CTO Signal styles -->
   <style>
     #cto-signal-section {
-      margin-top: 4em;
+      margin: 2.5em 0 3em 0;
       text-align: center;
     }
     #cto-signal-card {
@@ -76,7 +76,11 @@
 <body class="homepage">
 <!-- Main -->
 <div id="main">
-  <div class="container">
+  <div class="container" id="main-container">
+
+    <!-- Placeholder so we can easily move the CTO section to the top -->
+    <div id="cto-top-placeholder"></div>
+
     <!-- Row 1 -->
     <div class="row">
       <div class="3u">
@@ -120,7 +124,7 @@
       </div>
     </div>
 
-    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D) -->
+    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D) – starts at bottom -->
     <div id="cto-signal-section">
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
         
@@ -337,7 +341,28 @@ function smma(src, length) {
   return result;
 }
 
-function fetchCtoSignal(symbol, signalId, metaId) {
+var ctoResults = { btc: null, eth: null };
+
+function updateCtoPosition() {
+  // Wait until both results are in
+  if (ctoResults.btc === null || ctoResults.eth === null) return;
+
+  var section = document.getElementById('cto-signal-section');
+  var topPlaceholder = document.getElementById('cto-top-placeholder');
+  var container = document.getElementById('main-container');
+
+  var isNeutral = (ctoResults.btc === 'neutral' || ctoResults.eth === 'neutral');
+
+  if (isNeutral) {
+    // Move to top
+    topPlaceholder.appendChild(section);
+  } else {
+    // Move to bottom (after the sensor rows)
+    container.appendChild(section);
+  }
+}
+
+function fetchCtoSignal(symbol, signalId, metaId, key) {
   var signalEl = document.getElementById(signalId);
   var metaEl   = document.getElementById(metaId);
 
@@ -392,17 +417,25 @@ function fetchCtoSignal(symbol, signalId, metaId) {
         '<strong>Last daily close:</strong> ' + lastClose + '<br>' +
         '<strong>Bar date:</strong> ' + time + '<br>' +
         'Updated: ' + new Date().toLocaleTimeString();
+
+      // Store result and possibly move the section
+      ctoResults[key] = cls;
+      updateCtoPosition();
     })
     .catch(function(err) {
       signalEl.textContent = 'Error';
       signalEl.className = 'error';
       metaEl.textContent = err.message + ' – will retry on next page refresh';
+
+      // Treat error as non-neutral so section stays at bottom
+      ctoResults[key] = 'error';
+      updateCtoPosition();
     });
 }
 
 // Run both on load
-fetchCtoSignal('BTCUSDT', 'cto-signal-btc', 'cto-meta-btc');
-fetchCtoSignal('ETHUSDT', 'cto-signal-eth', 'cto-meta-eth');
+fetchCtoSignal('BTCUSDT', 'cto-signal-btc', 'cto-meta-btc', 'btc');
+fetchCtoSignal('ETHUSDT', 'cto-signal-eth', 'cto-meta-eth', 'eth');
 </script>
 </body>
 </html>
