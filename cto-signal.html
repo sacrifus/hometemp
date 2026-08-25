@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTCUSD 1D – CTO Line Signal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f1115;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #1a1d24;
+      border-radius: 16px;
+      padding: 40px 50px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      max-width: 420px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #888;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .pair {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+    .signal {
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      margin: 20px 0;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    .buy   { color: #00c853; text-shadow: 0 0 30px rgba(0,200,83,0.4); }
+    .sell  { color: #ff1744; text-shadow: 0 0 30px rgba(255,23,68,0.4); }
+    .neutral { color: #9e9e9e; }
+    .meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 25px;
+      line-height: 1.6;
+    }
+    .meta strong { color: #aaa; }
+    .loading { color: #666; font-size: 1.2rem; }
+    .error { color: #ff5252; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CTO LINE SIGNAL</h1>
+    <div class="pair">BTCUSD · 1D</div>
+    <div id="signal" class="signal loading">Loading…</div>
+    <div id="meta" class="meta"></div>
+  </div>
+
+  <script>
+    // Exact SMMA from your Pine Script
+    function smma(src, length) {
+      const result = new Array(src.length).fill(NaN);
+      let sum = 0;
+      for (let i = 0; i < src.length; i++) {
+        if (i < length - 1) {
+          sum += src[i];
+          continue;
+        }
+        if (i === length - 1) {
+          sum += src[i];
+          result[i] = sum / length;          // first value = SMA
+        } else {
+          result[i] = (result[i - 1] * (length - 1) + src[i]) / length;
+        }
+      }
+      return result;
+    }
+
+    async function fetchAndCompute() {
+      const signalEl = document.getElementById('signal');
+      const metaEl   = document.getElementById('meta');
+
+      try {
+        // Binance public klines (no API key needed)
+        const url = 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100';
+        const res  = await fetch(url);
+        if (!res.ok) throw new Error('Network error');
+        const data = await res.json();
+
+        // Extract high, low → hl2
+        const hl2 = data.map(c => (parseFloat(c[2]) + parseFloat(c[3])) / 2);
+
+        // Compute the four SMMAs
+        const v1 = smma(hl2, 15);
+        const m1 = smma(hl2, 19);
+        const m2 = smma(hl2, 25);
+        const v2 = smma(hl2, 29);
+
+        const i = hl2.length - 1; // latest closed daily bar
+
+        // Exact Pine logic
+        const p2 = (v1[i] < m1[i]) !== (v1[i] < v2[i]) || (m2[i] < v2[i]) !== (v1[i] < v2[i]);
+        const p3 = !p2 && (v1[i] < v2[i]);
+        const p1 = !p2 && !p3;
+
+        // Map colors → signals (community convention)
+        // Orange (p1) = BUY, Navy (p3) = SELL, Silver (p2) = NEUTRAL
+        let text, cls, colorName;
+        if (p1) {
+          text = 'BUY';
+          cls  = 'buy';
+          colorName = 'Orange';
+        } else if (p2) {
+          text = 'NEUTRAL';
+          cls  = 'neutral';
+          colorName = 'Silver / Gray';
+        } else {
+          text = 'SELL';
+          cls  = 'sell';
+          colorName = 'Navy / Blue';
+        }
+
+        signalEl.textContent = text;
+        signalEl.className = 'signal ' + cls;
+
+        const lastClose = parseFloat(data[i][4]).toLocaleString('en-US', {
+          style: 'currency', currency: 'USD', maximumFractionDigits: 0
+        });
+        const time = new Date(data[i][0]).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        metaEl.innerHTML = `
+          <strong>Color:</strong> ${colorName}<br>
+          <strong>Last daily close:</strong> ${lastClose}<br>
+          <strong>Bar date:</strong> ${time}<br>
+          Updated: ${new Date().toLocaleTimeString()}
+        `;
+      } catch (err) {
+        signalEl.textContent = 'Error';
+        signalEl.className = 'signal error';
+        metaEl.textContent = err.message + ' – will retry automatically';
+      }
+    }
+
+    // Run immediately and every 5 minutes
+    fetchAndCompute();
+    setInterval(fetchAndCompute, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
