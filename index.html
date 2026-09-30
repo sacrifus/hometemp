@@ -26,7 +26,8 @@
 
   <!-- CTO Signal styles -->
   <style>
-    #cto-signal-section {
+    #cto-signal-section,
+    #cto-top {
       margin: 2.5em 0 3em 0;
       text-align: center;
     }
@@ -85,7 +86,8 @@
   <div class="container" id="main-container">
 
     <!-- Placeholder so we can easily move the CTO section to the top -->
-    <div id="cto-top-placeholder"></div>
+    <!-- NEUTRAL CTO cards are moved up into this row (hidden while empty) -->
+    <div id="cto-top" class="cto-row" style="display:none"></div>
 
     <!-- Row 1 -->
     <div class="row">
@@ -389,26 +391,29 @@ function ctoSignalAt(a, i) {
 var CTO_TEXT  = { buy: 'BUY', neutral: 'NEUTRAL', sell: 'SELL' };
 var CTO_COLOR = { buy: 'Orange', neutral: 'Silver / Gray', sell: 'Navy / Blue' };
 
-var ctoResults = { btc: null, eth: null, pls: null, prvx: null, pdai: null };
+// Remember each card's original order so cards moved to the top stay in the same order
+document.querySelectorAll('.cto-signal-card').forEach(function(card, i) {
+  card.setAttribute('data-order', i);
+});
 
-function updateCtoPosition() {
-  // Wait until all results are in
-  var keys = Object.keys(ctoResults);
-  if (keys.some(function(k) { return ctoResults[k] === null; })) return;
+// Move a single card to the top row when its signal is NEUTRAL; others stay at the bottom
+function placeCtoCard(key, signal) {
+  if (signal !== 'neutral') return;
 
-  var section = document.getElementById('cto-signal-section');
-  var topPlaceholder = document.getElementById('cto-top-placeholder');
-  var container = document.getElementById('main-container');
+  var card    = document.getElementById('cto-signal-' + key).closest('.cto-signal-card');
+  var top     = document.getElementById('cto-top');
+  var fromRow = card.parentNode;
+  var order   = +card.getAttribute('data-order');
 
-  var isNeutral = keys.some(function(k) { return ctoResults[k] === 'neutral'; });
-
-  if (isNeutral) {
-    // Move to top
-    topPlaceholder.appendChild(section);
-  } else {
-    // Move to bottom (after the sensor rows)
-    container.appendChild(section);
+  var before = null;
+  for (var i = 0; i < top.children.length; i++) {
+    if (+top.children[i].getAttribute('data-order') > order) { before = top.children[i]; break; }
   }
+  top.insertBefore(card, before);
+  top.style.display = '';
+
+  // Hide a bottom row once all of its cards have moved up
+  if (!fromRow.querySelector('.cto-signal-card')) fromRow.style.display = 'none';
 }
 
 function getJson(url) {
@@ -496,18 +501,14 @@ function fetchCtoSignal(loader, key, intraday) {
         '<strong>Last close:</strong> ' + fmtUsd(data[last - 1][4]) + ' (' + utcDate(data[last - 1][0]) + ')<br>' +
         'Updated: ' + new Date().toLocaleTimeString();
 
-      // Store result and possibly move the section
-      ctoResults[key] = closed;
-      updateCtoPosition();
+      // Move this card to the top if it's NEUTRAL
+      placeCtoCard(key, closed);
     })
     .catch(function(err) {
+      // Errors are not NEUTRAL, so the card stays at the bottom
       signalEl.textContent = 'Error';
       signalEl.className = 'cto-signal error';
       metaEl.textContent = err.message + ' – will retry on next page refresh';
-
-      // Treat error as non-neutral so section stays at bottom
-      ctoResults[key] = 'error';
-      updateCtoPosition();
     });
 }
 
