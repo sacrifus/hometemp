@@ -50,19 +50,18 @@
       color: #ccc;
       margin-bottom: 18px;
     }
-    #cto-signal-btc,
-    #cto-signal-eth {
+    .cto-signal {
       font-size: 3.2rem;
       font-weight: 800;
       letter-spacing: 3px;
       margin: 10px 0;
       text-transform: uppercase;
     }
-    #cto-signal-btc.buy,    #cto-signal-eth.buy    { color: #00c853; text-shadow: 0 0 20px rgba(0,200,83,0.35); }
-    #cto-signal-btc.sell,   #cto-signal-eth.sell   { color: #ff1744; text-shadow: 0 0 20px rgba(255,23,68,0.35); }
-    #cto-signal-btc.neutral,#cto-signal-eth.neutral{ color: #9e9e9e; }
-    #cto-signal-btc.loading,#cto-signal-eth.loading,
-    #cto-signal-btc.error,  #cto-signal-eth.error  { color: #666; font-size: 1.3rem; letter-spacing: 1px; }
+    .cto-signal.buy     { color: #00c853; text-shadow: 0 0 20px rgba(0,200,83,0.35); }
+    .cto-signal.sell    { color: #ff1744; text-shadow: 0 0 20px rgba(255,23,68,0.35); }
+    .cto-signal.neutral { color: #9e9e9e; }
+    .cto-signal.loading,
+    .cto-signal.error   { color: #666; font-size: 1.3rem; letter-spacing: 1px; }
     .cto-meta {
       font-size: 0.85rem;
       color: #666;
@@ -124,7 +123,7 @@
       </div>
     </div>
 
-    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D) – starts at bottom -->
+    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D, WPLS 4H) – starts at bottom -->
     <div id="cto-signal-section">
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
 
@@ -132,7 +131,7 @@
         <div class="cto-signal-card">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">BTCUSD · 1D</div>
-          <div id="cto-signal-btc" class="loading">Loading…</div>
+          <div id="cto-signal-btc" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-btc" class="cto-meta"></div>
         </div>
 
@@ -140,8 +139,16 @@
         <div class="cto-signal-card">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">ETHUSD · 1D</div>
-          <div id="cto-signal-eth" class="loading">Loading…</div>
+          <div id="cto-signal-eth" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-eth" class="cto-meta"></div>
+        </div>
+
+        <!-- PulseChain WPLS Card (PulseX WPLS/DAI pool, same as TradingView WPLSDAI_E56043.USD) -->
+        <div class="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">WPLS/DAI · 4H</div>
+          <div id="cto-signal-pls" class="cto-signal loading">Loading…</div>
+          <div id="cto-meta-pls" class="cto-meta"></div>
         </div>
 
       </div>
@@ -352,17 +359,18 @@ function ctoSignalAt(a, i) {
 var CTO_TEXT  = { buy: 'BUY', neutral: 'NEUTRAL', sell: 'SELL' };
 var CTO_COLOR = { buy: 'Orange', neutral: 'Silver / Gray', sell: 'Navy / Blue' };
 
-var ctoResults = { btc: null, eth: null };
+var ctoResults = { btc: null, eth: null, pls: null };
 
 function updateCtoPosition() {
-  // Wait until both results are in
-  if (ctoResults.btc === null || ctoResults.eth === null) return;
+  // Wait until all results are in
+  var keys = Object.keys(ctoResults);
+  if (keys.some(function(k) { return ctoResults[k] === null; })) return;
 
   var section = document.getElementById('cto-signal-section');
   var topPlaceholder = document.getElementById('cto-top-placeholder');
   var container = document.getElementById('main-container');
 
-  var isNeutral = (ctoResults.btc === 'neutral' || ctoResults.eth === 'neutral');
+  var isNeutral = keys.some(function(k) { return ctoResults[k] === 'neutral'; });
 
   if (isNeutral) {
     // Move to top
@@ -373,18 +381,59 @@ function updateCtoPosition() {
   }
 }
 
-function fetchCtoSignal(symbol, signalId, metaId, key) {
-  var signalEl = document.getElementById(signalId);
-  var metaEl   = document.getElementById(metaId);
+function getJson(url) {
+  return fetch(url).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+}
 
-  // 1000 daily bars so the slow SMMAs are fully warmed up (matches TradingView)
-  fetch('https://data-api.binance.vision/api/v3/klines?symbol=' + symbol + '&interval=1d&limit=1000')
-    .then(function(res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
+// Each loader resolves to candles, oldest first: [openTimeMs, open, high, low, close]
+
+// Binance: 1000 daily bars so the slow SMMAs are fully warmed up (matches TradingView)
+function loadBinance(symbol) {
+  return getJson('https://data-api.binance.vision/api/v3/klines?symbol=' + symbol + '&interval=1d&limit=1000')
     .then(function(data) {
-      var hl2 = data.map(function(c) { return (parseFloat(c[2]) + parseFloat(c[3])) / 2; });
+      return data.map(function(c) {
+        return [c[0], parseFloat(c[1]), parseFloat(c[2]), parseFloat(c[3]), parseFloat(c[4])];
+      });
+    });
+}
+
+// GeckoTerminal DEX pool (PulseChain etc.). timeframe 'day' / 'hour' / 'minute', aggregate e.g. 4
+// for 4h candles (UTC-aligned). Returns newest first; token=quote prices the pool's quote token.
+// Daily only gets ~6 months per call, so fetch a second page when the first is short.
+function loadGeckoPool(network, pool, token, timeframe, aggregate) {
+  var base = 'https://api.geckoterminal.com/api/v2/networks/' + network + '/pools/' + pool
+           + '/ohlcv/' + timeframe + '?aggregate=' + aggregate
+           + '&currency=usd&limit=1000&token=' + token;
+  return getJson(base).then(function(p1) {
+    var list = p1.data.attributes.ohlcv_list;
+    if (!list.length || list.length >= 300) return list;
+    return getJson(base + '&before_timestamp=' + list[list.length - 1][0])
+      .then(function(p2) { return list.concat(p2.data.attributes.ohlcv_list); },
+            function()   { return list; });  // one page is still enough
+  }).then(function(list) {
+    return list.reverse().map(function(c) { return [c[0] * 1000, c[1], c[2], c[3], c[4]]; });
+  });
+}
+
+function fmtUsd(v) {
+  if (v >= 100) return v.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  // Small prices (e.g. PLS): keep 4 significant digits
+  return '$' + v.toPrecision(4).replace(/\.?0+$/, '');
+}
+
+// intraday = true for sub-daily timeframes (shows times, durations in hours)
+function fetchCtoSignal(loader, key, intraday) {
+  var signalEl = document.getElementById('cto-signal-' + key);
+  var metaEl   = document.getElementById('cto-meta-' + key);
+
+  loader()
+    .then(function(data) {
+      if (data.length < 31) throw new Error('Not enough history');
+
+      var hl2 = data.map(function(c) { return (c[2] + c[3]) / 2; });
       var a = [smma(hl2, 15), smma(hl2, 19), smma(hl2, 25), smma(hl2, 29)];
 
       var last   = hl2.length - 1;           // live (still-forming) candle
@@ -394,26 +443,27 @@ function fetchCtoSignal(symbol, signalId, metaId, key) {
       // Walk back to find when the closed-candle signal started
       var start = last - 1;
       while (start > 0 && ctoSignalAt(a, start - 1) === closed) start--;
-      var days = Math.round((Date.now() - data[start][0]) / 86400000);
+      var hours = Math.round((Date.now() - data[start][0]) / 3600000);
+      var age = hours < 48 ? hours + ' hours' : Math.round(hours / 24) + ' days';
 
-      // Binance daily candles open at 00:00 UTC
+      // Daily candles open at 00:00 UTC, so show them as UTC dates;
+      // intraday candles are shown in local time
       var utcDate = function(ms) {
+        if (intraday) {
+          return new Date(ms).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+        }
         return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
       };
 
       signalEl.textContent = CTO_TEXT[closed];
-      signalEl.className   = closed;
-
-      var lastClose = parseFloat(data[last - 1][4]).toLocaleString('en-US', {
-        style: 'currency', currency: 'USD', maximumFractionDigits: 0
-      });
+      signalEl.className   = 'cto-signal ' + closed;
 
       metaEl.innerHTML =
         '<strong>Color:</strong> ' + CTO_COLOR[closed] + '<br>' +
-        '<strong>Since:</strong> ' + utcDate(data[start][0]) + ' (' + days + ' days)<br>' +
+        '<strong>Since:</strong> ' + utcDate(data[start][0]) + ' (' + age + ')<br>' +
         '<strong>Live candle:</strong> ' + CTO_TEXT[live] +
           (live !== closed ? ' <span class="cto-warn">⚠ may flip at close</span>' : '') + '<br>' +
-        '<strong>Last daily close:</strong> ' + lastClose + ' (' + utcDate(data[last - 1][0]) + ')<br>' +
+        '<strong>Last close:</strong> ' + fmtUsd(data[last - 1][4]) + ' (' + utcDate(data[last - 1][0]) + ')<br>' +
         'Updated: ' + new Date().toLocaleTimeString();
 
       // Store result and possibly move the section
@@ -422,7 +472,7 @@ function fetchCtoSignal(symbol, signalId, metaId, key) {
     })
     .catch(function(err) {
       signalEl.textContent = 'Error';
-      signalEl.className = 'error';
+      signalEl.className = 'cto-signal error';
       metaEl.textContent = err.message + ' – will retry on next page refresh';
 
       // Treat error as non-neutral so section stays at bottom
@@ -431,9 +481,13 @@ function fetchCtoSignal(symbol, signalId, metaId, key) {
     });
 }
 
-// Run both on load
-fetchCtoSignal('BTCUSDT', 'cto-signal-btc', 'cto-meta-btc', 'btc');
-fetchCtoSignal('ETHUSDT', 'cto-signal-eth', 'cto-meta-eth', 'eth');
+// Run all on load
+fetchCtoSignal(function() { return loadBinance('BTCUSDT'); }, 'btc');
+fetchCtoSignal(function() { return loadBinance('ETHUSDT'); }, 'eth');
+// PulseX WPLS/DAI pool – TradingView WPLSDAI_E56043.USD, 4h candles
+fetchCtoSignal(function() {
+  return loadGeckoPool('pulsechain', '0xE56043671df55dE5CDf8459710433C10324DE0aE', 'quote', 'hour', 4);
+}, 'pls', true);
 </script>
 </body>
 </html>
