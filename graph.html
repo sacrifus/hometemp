@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Graphique</title>
+  <title>Chart</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -124,18 +124,19 @@
 <body>
 
 <header>
-  <a href="index.html" class="back-btn">← Retour</a>
-  <h1 id="page-title">Graphique</h1>
+  <a href="index.html" class="back-btn">← Back</a>
+  <h1 id="page-title">Chart</h1>
   <span class="last-update" id="last-update"></span>
 </header>
 
 <div class="range-bar">
-  <span>Période :</span>
+  <span>Range:</span>
   <button class="range-btn" data-hours="6">6h</button>
   <button class="range-btn" data-hours="12">12h</button>
+  <button class="range-btn" data-hours="24">24h</button>
   <button class="range-btn active" data-hours="48">48h</button>
-  <button class="range-btn" data-hours="168">7j</button>
-  <button class="range-btn" data-hours="0">Tout</button>
+  <button class="range-btn" data-hours="168">7d</button>
+  <button class="range-btn" data-hours="0">All</button>
 </div>
 
 <div class="charts-wrapper" id="charts-wrapper"></div>
@@ -145,13 +146,15 @@
 // Sensor metadata (mirrors index.html)
 // =============================================================================
 var SENSORS = {
-  outside:    { label: 'Extérieur', hasHum: false },
-  pool:       { label: 'Piscine',   hasHum: false  },
-  upstairs:   { label: 'En haut',   hasHum: true  },
-  downstairs: { label: 'En bas',    hasHum: true  },
-  kitchen:    { label: 'Cuisine',   hasHum: true  },
-  garage:     { label: 'Garage',    hasHum: true  }
+  outside:    { label: 'Outside',    hasHum: false },
+  pool:       { label: 'Pool',       hasHum: false  },
+  upstairs:   { label: 'Upstairs',   hasHum: true  },
+  downstairs: { label: 'Downstairs', hasHum: true  },
+  kitchen:    { label: 'Kitchen',    hasHum: true  },
+  garage:     { label: 'Garage',     hasHum: true  }
 };
+
+var LOCALE = 'en-US';
 
 // =============================================================================
 // Parse sensor ID from URL
@@ -170,9 +173,9 @@ var cfg      = SENSORS[sensorId];
 
 if (cfg) {
   document.getElementById('page-title').textContent = cfg.label;
-  document.title = 'Graphique — ' + cfg.label;
+  document.title = 'Chart — ' + cfg.label;
 } else {
-  document.getElementById('page-title').textContent = 'Capteur inconnu';
+  document.getElementById('page-title').textContent = 'Unknown sensor';
 }
 
 var currentHours = 48;
@@ -197,11 +200,11 @@ function loadHistory(hours) {
 // =============================================================================
 function fmtLabel(ms, hours) {
   var d = new Date(ms);
-  if (hours <= 24) {
-    return d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+  if (hours && hours <= 24) {
+    return d.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
   }
-  return d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric' })
-       + ' ' + d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString(LOCALE, { month: 'short', day: 'numeric' })
+       + ' ' + d.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
 }
 
 // =============================================================================
@@ -229,9 +232,9 @@ function render(hours) {
 
   if (!points.length) {
     wrapper.innerHTML = '<div class="no-data">'
-      + '<strong>Aucune donnée disponible</strong>'
-      + 'Les données s\'accumulent à chaque rafraîchissement de 15 min sur la page principale.<br>'
-      + 'Revenez après quelques cycles pour voir les graphiques.'
+      + '<strong>No data available</strong>'
+      + 'Data builds up with each 15-minute refresh of the main page.<br>'
+      + 'Check back after a few cycles to see the charts.'
       + '</div>';
     document.getElementById('last-update').textContent = '';
     return;
@@ -241,8 +244,8 @@ function render(hours) {
   var lastPt  = points[points.length - 1];
   var lastDate = new Date(lastPt.t);
   document.getElementById('last-update').textContent =
-    'Dernière lecture: ' + lastDate.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric' })
-    + ' ' + lastDate.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+    'Last reading: ' + lastDate.toLocaleDateString(LOCALE, { month: 'short', day: 'numeric' })
+    + ' ' + lastDate.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
 
   var labels   = points.map(function(p) { return fmtLabel(p.t, hours); });
   var tempVals = points.map(function(p) { return p.temp; });
@@ -268,13 +271,13 @@ function render(hours) {
     color: '#cc3300',
     fill: 'rgba(204,51,0,0.07)',
     unit: '°C',
-    label: 'Température'
+    label: 'Temperature'
   }));
 
   // ---- Humidity panel ----
   if (hasHum) {
     var humPanel = makePanelEl({
-      label: (cfg ? cfg.label : sensorId) + ' — Humidité',
+      label: (cfg ? cfg.label : sensorId) + ' — Humidity',
       current: lastPt.hum !== null ? lastPt.hum.toFixed(1) + ' %' : '—',
       currentClass: 'current-hum',
       statLabel: '%',
@@ -288,7 +291,7 @@ function render(hours) {
       color: '#2a7a2a',
       fill: 'rgba(42,122,42,0.07)',
       unit: '%',
-      label: 'Humidité'
+      label: 'Humidity'
     }));
   }
 }
@@ -302,7 +305,7 @@ function makePanelEl(opts) {
   if (s && s.min !== null) {
     statsHtml = '<div class="stat-group">'
       + '<div class="stat-item"><span>Min</span><strong>' + s.min.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
-      + '<div class="stat-item"><span>Moy</span><strong>' + s.avg.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
+      + '<div class="stat-item"><span>Avg</span><strong>' + s.avg.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
       + '<div class="stat-item"><span>Max</span><strong>' + s.max.toFixed(1) + ' ' + opts.statLabel + '</strong></div>'
       + '</div>';
   }
