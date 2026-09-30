@@ -233,7 +233,7 @@ $.ajaxSetup({
 });
 function fetchWirelessTag(sensorId) {
   $.ajax({
-    url: 'https://my.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID',
+    url: 'https://www.wirelesstag.net/ethLogShared.asmx/GetLatestTemperatureRawDataByUUID',
     data: JSON.stringify({ uuid: WIRELESSTAG_UUIDS[sensorId] }),
     success: function(retval) {
       var d = retval.d;
