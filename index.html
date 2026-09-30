@@ -30,6 +30,13 @@
       margin: 2.5em 0 3em 0;
       text-align: center;
     }
+    .cto-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .cto-row + .cto-row { margin-top: 30px; }
     .cto-signal-card {
       background: #1a1d24;
       border-radius: 12px;
@@ -123,9 +130,11 @@
       </div>
     </div>
 
-    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D, WPLS + PRVX 4H) – starts at bottom -->
+    <!-- CTO Line Signals – starts at bottom -->
     <div id="cto-signal-section">
-      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
+
+      <!-- Row 1: BTC + ETH (1D, Binance) -->
+      <div class="cto-row">
 
         <!-- BTC Card -->
         <div class="cto-signal-card">
@@ -143,6 +152,11 @@
           <div id="cto-meta-eth" class="cto-meta"></div>
         </div>
 
+      </div>
+
+      <!-- Row 2: PulseChain pairs (4H, GeckoTerminal) -->
+      <div class="cto-row">
+
         <!-- PulseChain WPLS Card (PulseX WPLS/DAI pool, same as TradingView WPLSDAI_E56043.USD) -->
         <div class="cto-signal-card">
           <h3>CTO LINE SIGNAL</h3>
@@ -157,6 +171,14 @@
           <div class="pair">PRVX/USDC · 4H</div>
           <div id="cto-signal-prvx" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-prvx" class="cto-meta"></div>
+        </div>
+
+        <!-- pDAI Card (PulseX DAI/WPLS pool AE8429 – most liquid pDAI pool) -->
+        <div class="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">PDAI/WPLS · 4H</div>
+          <div id="cto-signal-pdai" class="cto-signal loading">Loading…</div>
+          <div id="cto-meta-pdai" class="cto-meta"></div>
         </div>
 
       </div>
@@ -367,7 +389,7 @@ function ctoSignalAt(a, i) {
 var CTO_TEXT  = { buy: 'BUY', neutral: 'NEUTRAL', sell: 'SELL' };
 var CTO_COLOR = { buy: 'Orange', neutral: 'Silver / Gray', sell: 'Navy / Blue' };
 
-var ctoResults = { btc: null, eth: null, pls: null, prvx: null };
+var ctoResults = { btc: null, eth: null, pls: null, prvx: null, pdai: null };
 
 function updateCtoPosition() {
   // Wait until all results are in
@@ -500,6 +522,10 @@ fetchCtoSignal(function() {
 fetchCtoSignal(function() {
   return loadGeckoPool('pulsechain', '0x7f681a5ad615238357ba148c281e2eaefd2de55a', 'quote', 'hour', 4);
 }, 'prvx', true);
+// PulseX DAI/WPLS pool AE8429 – most liquid pDAI pool, 4h candles (pDAI is the base token)
+fetchCtoSignal(function() {
+  return loadGeckoPool('pulsechain', '0xae8429918fdbf9a5867e3243697637dc56aa76a1', 'base', 'hour', 4);
+}, 'pdai', true);
 </script>
 </body>
 </html>
