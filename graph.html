@@ -133,8 +133,8 @@
   <span>Range:</span>
   <button class="range-btn" data-hours="6">6h</button>
   <button class="range-btn" data-hours="12">12h</button>
-  <button class="range-btn" data-hours="24">24h</button>
-  <button class="range-btn active" data-hours="48">48h</button>
+  <button class="range-btn active" data-hours="24">24h</button>
+  <button class="range-btn" data-hours="48">48h</button>
   <button class="range-btn" data-hours="168">7d</button>
   <button class="range-btn" data-hours="0">All</button>
 </div>
@@ -178,7 +178,7 @@ if (cfg) {
   document.getElementById('page-title').textContent = 'Unknown sensor';
 }
 
-var currentHours = 48;
+var currentHours = 24;
 var chartInstances = [];
 
 // =============================================================================
