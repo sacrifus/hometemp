@@ -26,19 +26,29 @@
 
   <!-- CTO Signal styles -->
   <style>
-    #cto-signal-section,
-    #cto-top {
+    #cto-signal-section {
       margin: 2.5em 0 3em 0;
       text-align: center;
     }
+    /* Rows hold at most 2 cards per line (2 x 360px + 30px gap); an odd card is centered.
+       On narrow screens cards shrink and stack one per line. */
     .cto-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 30px;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .cto-row + .cto-row { margin-top: 30px; }
+    #cto-top {
+      margin: 2.5em auto 3em auto;
+      text-align: center;
+    }
     .cto-signal-card {
+      flex: 0 1 360px;
+      box-sizing: border-box;
       background: #1a1d24;
       border-radius: 12px;
       padding: 28px 40px;
@@ -165,6 +175,14 @@
           <div class="pair">WPLS/DAI · 4H</div>
           <div id="cto-signal-pls" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-pls" class="cto-meta"></div>
+        </div>
+
+        <!-- HEX Card (PulseX HEX/WPLS pool, TradingView HEXWPLS_F1F4EE.USD) -->
+        <div class="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">HEX/WPLS · 4H</div>
+          <div id="cto-signal-hex" class="cto-signal loading">Loading…</div>
+          <div id="cto-meta-hex" class="cto-meta"></div>
         </div>
 
         <!-- ProveX PRVX Card (PulseX USDC/PRVX pool, TradingView PRVXUSDC_7F681A.USD) -->
@@ -519,6 +537,10 @@ fetchCtoSignal(function() { return loadBinance('ETHUSDT'); }, 'eth');
 fetchCtoSignal(function() {
   return loadGeckoPool('pulsechain', '0xE56043671df55dE5CDf8459710433C10324DE0aE', 'quote', 'hour', 4);
 }, 'pls', true);
+// PulseX HEX/WPLS pool – TradingView HEXWPLS_F1F4EE.USD, 4h candles (HEX is the base token)
+fetchCtoSignal(function() {
+  return loadGeckoPool('pulsechain', '0xf1f4ee610b2babb05c635f726ef8b0c568c8dc65', 'base', 'hour', 4);
+}, 'hex', true);
 // PulseX USDC/PRVX pool – TradingView PRVXUSDC_7F681A.USD, 4h candles
 fetchCtoSignal(function() {
   return loadGeckoPool('pulsechain', '0x7f681a5ad615238357ba148c281e2eaefd2de55a', 'quote', 'hour', 4);
