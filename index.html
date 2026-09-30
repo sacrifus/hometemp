@@ -4,7 +4,7 @@
     templated.co @templatedco
     Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 -->
-<html>
+<html lang="en">
 <head>
   <title>David Maison</title>
   <!-- Refresh every 15 minutes to collect a new data point -->
@@ -30,21 +30,21 @@
       margin: 2.5em 0 3em 0;
       text-align: center;
     }
-    #cto-signal-card {
+    .cto-signal-card {
       background: #1a1d24;
       border-radius: 12px;
       padding: 28px 40px;
       min-width: 260px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.35);
     }
-    #cto-signal-card h3 {
+    .cto-signal-card h3 {
       font-size: 0.95rem;
       font-weight: 500;
       color: #888;
       margin: 0 0 6px 0;
       letter-spacing: 1px;
     }
-    #cto-signal-card .pair {
+    .cto-signal-card .pair {
       font-size: 1.15rem;
       font-weight: 600;
       color: #ccc;
@@ -70,6 +70,7 @@
       line-height: 1.55;
     }
     .cto-meta strong { color: #aaa; }
+    .cto-meta .cto-warn { color: #ffb300; }
   </style>
 </head>
 <body class="homepage">
@@ -91,7 +92,7 @@
       <div class="3u">
         <section>
           <a href="graph.html?id=pool" class="image full"><img src="images/pool.jpg" alt="" /></a>
-          <p id="output-pool">Chargement YoLink...</p>
+          <p id="output-pool">Loading YoLink...</p>
         </section>
       </div>
       <div class="3u">
@@ -112,13 +113,13 @@
       <div class="3u">
         <section>
           <a href="graph.html?id=kitchen" class="image full"><img src="images/fridge_up.png" alt="" /></a>
-          <p id="output-kitchen">Chargement YoLink...</p>
+          <p id="output-kitchen">Loading YoLink...</p>
         </section>
       </div>
       <div class="3u">
         <section>
           <a href="graph.html?id=garage" class="image full"><img src="images/outside.jpg" alt="" /></a>
-          <p id="output-garage">Chargement YoLink...</p>
+          <p id="output-garage">Loading YoLink...</p>
         </section>
       </div>
     </div>
@@ -126,9 +127,9 @@
     <!-- CTO Line Signals (BTCUSD + ETHUSD 1D) – starts at bottom -->
     <div id="cto-signal-section">
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
-        
+
         <!-- BTC Card -->
-        <div id="cto-signal-card">
+        <div class="cto-signal-card">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">BTCUSD · 1D</div>
           <div id="cto-signal-btc" class="loading">Loading…</div>
@@ -136,7 +137,7 @@
         </div>
 
         <!-- ETH Card -->
-        <div id="cto-signal-card">
+        <div class="cto-signal-card">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">ETHUSD · 1D</div>
           <div id="cto-signal-eth" class="loading">Loading…</div>
@@ -155,12 +156,12 @@
 // Sensor definitions
 // =============================================================================
 var SENSORS = {
-  outside:    { label: 'Extérieur', hasHum: false },
-  pool:       { label: 'Piscine',   hasHum: false  },
-  upstairs:   { label: 'En haut',   hasHum: true  },
-  downstairs: { label: 'En bas',    hasHum: true  },
-  kitchen:    { label: 'Cuisine',   hasHum: true  },
-  garage:     { label: 'Garage',    hasHum: true  }
+  outside:    { label: 'Outside',    hasHum: false },
+  pool:       { label: 'Pool',       hasHum: false  },
+  upstairs:   { label: 'Upstairs',   hasHum: true  },
+  downstairs: { label: 'Downstairs', hasHum: true  },
+  kitchen:    { label: 'Kitchen',    hasHum: true  },
+  garage:     { label: 'Garage',     hasHum: true  }
 };
 var WIRELESSTAG_UUIDS = {
   outside:    '0f6ff5d2-dfa2-493e-893e-c9de8e50bfb0',
@@ -214,11 +215,15 @@ function showReading(sensorId, temp, hum, time) {
     + displayTemp.toFixed(1)
     + '<span class="sup">' + unit + '</span>&nbsp;&nbsp;&nbsp;</span>';
   if (hum !== null && hum !== undefined && cfg.hasHum) {
-    html += 'Humidité: <b>' + hum.toFixed(1) + '%</b>';
+    html += 'Humidity: <b>' + hum.toFixed(1) + '%</b>';
   } else if (timeStr) {
-    html += 'Mise à jour: <b>' + timeStr + '</b>';
+    html += 'Updated: <b>' + timeStr + '</b>';
   }
   el.innerHTML = html;
+}
+function showError(sensorId, message) {
+  var el = document.getElementById('output-' + sensorId);
+  if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> ' + message;
 }
 // =============================================================================
 // WirelessTag fetching
@@ -243,8 +248,7 @@ function fetchWirelessTag(sensorId) {
       saveReading(sensorId, temp, hum);
     },
     error: function() {
-      var el = document.getElementById('output-' + sensorId);
-      if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur de lecture';
+      showError(sensorId, 'Read error');
     }
   });
 }
@@ -275,8 +279,7 @@ $.ajax({
     yolinkApi(accessToken, { method: 'Home.getDeviceList' }, function(retval) {
       if (!retval) {
         $.each(YOLINK_DEVICES, function(sensorId) {
-          var el = document.getElementById('output-' + sensorId);
-          if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur liste appareils';
+          showError(sensorId, 'Device list error');
         });
         return;
       }
@@ -287,8 +290,7 @@ $.ajax({
           if (dev.name === deviceName) { match = dev; return false; }
         });
         if (!match) {
-          var el = document.getElementById('output-' + sensorId);
-          if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Capteur introuvable';
+          showError(sensorId, 'Sensor not found');
           return;
         }
         yolinkApi(accessToken, {
@@ -297,8 +299,7 @@ $.ajax({
           token: match.token
         }, function(stateRetval) {
           if (!stateRetval) {
-            var el = document.getElementById('output-' + sensorId);
-            if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur de lecture';
+            showError(sensorId, 'Read error');
             return;
           }
           var state = stateRetval.data.state;
@@ -313,8 +314,7 @@ $.ajax({
   },
   error: function() {
     $.each(YOLINK_DEVICES, function(sensorId) {
-      var el = document.getElementById('output-' + sensorId);
-      if (el) el.innerHTML = '<b>' + SENSORS[sensorId].label + ':</b> Erreur d\'authentification';
+      showError(sensorId, 'Authentication error');
     });
   }
 });
@@ -339,6 +339,18 @@ function smma(src, length) {
   }
   return result;
 }
+
+// Signal at bar i given the four SMMA series [v1, m1, m2, v2]
+function ctoSignalAt(a, i) {
+  var v1 = a[0][i], m1 = a[1][i], m2 = a[2][i], v2 = a[3][i];
+  if (isNaN(v2)) return null;
+  var p2 = (v1 < m1) !== (v1 < v2) || (m2 < v2) !== (v1 < v2);
+  if (p2) return 'neutral';
+  return (v1 < v2) ? 'sell' : 'buy';
+}
+
+var CTO_TEXT  = { buy: 'BUY', neutral: 'NEUTRAL', sell: 'SELL' };
+var CTO_COLOR = { buy: 'Orange', neutral: 'Silver / Gray', sell: 'Navy / Blue' };
 
 var ctoResults = { btc: null, eth: null };
 
@@ -365,60 +377,47 @@ function fetchCtoSignal(symbol, signalId, metaId, key) {
   var signalEl = document.getElementById(signalId);
   var metaEl   = document.getElementById(metaId);
 
-  fetch('https://api.binance.com/api/v3/klines?symbol=' + symbol + '&interval=1d&limit=100')
+  // 1000 daily bars so the slow SMMAs are fully warmed up (matches TradingView)
+  fetch('https://data-api.binance.vision/api/v3/klines?symbol=' + symbol + '&interval=1d&limit=1000')
     .then(function(res) {
-      if (!res.ok) throw new Error('Network error');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     })
     .then(function(data) {
-      var hl2 = data.map(function(c) {
-        return (parseFloat(c[2]) + parseFloat(c[3])) / 2;
-      });
+      var hl2 = data.map(function(c) { return (parseFloat(c[2]) + parseFloat(c[3])) / 2; });
+      var a = [smma(hl2, 15), smma(hl2, 19), smma(hl2, 25), smma(hl2, 29)];
 
-      var v1 = smma(hl2, 15);
-      var m1 = smma(hl2, 19);
-      var m2 = smma(hl2, 25);
-      var v2 = smma(hl2, 29);
+      var last   = hl2.length - 1;           // live (still-forming) candle
+      var live   = ctoSignalAt(a, last);
+      var closed = ctoSignalAt(a, last - 1); // last completed candle
 
-      var i = hl2.length - 1;
+      // Walk back to find when the closed-candle signal started
+      var start = last - 1;
+      while (start > 0 && ctoSignalAt(a, start - 1) === closed) start--;
+      var days = Math.round((Date.now() - data[start][0]) / 86400000);
 
-      var p2 = (v1[i] < m1[i]) !== (v1[i] < v2[i]) || (m2[i] < v2[i]) !== (v1[i] < v2[i]);
-      var p3 = !p2 && (v1[i] < v2[i]);
-      var p1 = !p2 && !p3;
+      // Binance daily candles open at 00:00 UTC
+      var utcDate = function(ms) {
+        return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+      };
 
-      var text, cls, colorName;
-      if (p1) {
-        text = 'BUY';
-        cls  = 'buy';
-        colorName = 'Orange';
-      } else if (p2) {
-        text = 'NEUTRAL';
-        cls  = 'neutral';
-        colorName = 'Silver / Gray';
-      } else {
-        text = 'SELL';
-        cls  = 'sell';
-        colorName = 'Navy / Blue';
-      }
+      signalEl.textContent = CTO_TEXT[closed];
+      signalEl.className   = closed;
 
-      signalEl.textContent = text;
-      signalEl.className = cls;
-
-      var lastClose = parseFloat(data[i][4]).toLocaleString('en-US', {
+      var lastClose = parseFloat(data[last - 1][4]).toLocaleString('en-US', {
         style: 'currency', currency: 'USD', maximumFractionDigits: 0
-      });
-      var time = new Date(data[i][0]).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric'
       });
 
       metaEl.innerHTML =
-        '<strong>Color:</strong> ' + colorName + '<br>' +
-        '<strong>Last daily close:</strong> ' + lastClose + '<br>' +
-        '<strong>Bar date:</strong> ' + time + '<br>' +
+        '<strong>Color:</strong> ' + CTO_COLOR[closed] + '<br>' +
+        '<strong>Since:</strong> ' + utcDate(data[start][0]) + ' (' + days + ' days)<br>' +
+        '<strong>Live candle:</strong> ' + CTO_TEXT[live] +
+          (live !== closed ? ' <span class="cto-warn">⚠ may flip at close</span>' : '') + '<br>' +
+        '<strong>Last daily close:</strong> ' + lastClose + ' (' + utcDate(data[last - 1][0]) + ')<br>' +
         'Updated: ' + new Date().toLocaleTimeString();
 
       // Store result and possibly move the section
-      ctoResults[key] = cls;
+      ctoResults[key] = closed;
       updateCtoPosition();
     })
     .catch(function(err) {
