@@ -123,7 +123,7 @@
       </div>
     </div>
 
-    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D, WPLS 4H) – starts at bottom -->
+    <!-- CTO Line Signals (BTCUSD + ETHUSD 1D, WPLS + PRVX 4H) – starts at bottom -->
     <div id="cto-signal-section">
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
 
@@ -149,6 +149,14 @@
           <div class="pair">WPLS/DAI · 4H</div>
           <div id="cto-signal-pls" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-pls" class="cto-meta"></div>
+        </div>
+
+        <!-- ProveX PRVX Card (PulseX USDC/PRVX pool, TradingView PRVXUSDC_7F681A.USD) -->
+        <div class="cto-signal-card">
+          <h3>CTO LINE SIGNAL</h3>
+          <div class="pair">PRVX/USDC · 4H</div>
+          <div id="cto-signal-prvx" class="cto-signal loading">Loading…</div>
+          <div id="cto-meta-prvx" class="cto-meta"></div>
         </div>
 
       </div>
@@ -359,7 +367,7 @@ function ctoSignalAt(a, i) {
 var CTO_TEXT  = { buy: 'BUY', neutral: 'NEUTRAL', sell: 'SELL' };
 var CTO_COLOR = { buy: 'Orange', neutral: 'Silver / Gray', sell: 'Navy / Blue' };
 
-var ctoResults = { btc: null, eth: null, pls: null };
+var ctoResults = { btc: null, eth: null, pls: null, prvx: null };
 
 function updateCtoPosition() {
   // Wait until all results are in
@@ -488,6 +496,10 @@ fetchCtoSignal(function() { return loadBinance('ETHUSDT'); }, 'eth');
 fetchCtoSignal(function() {
   return loadGeckoPool('pulsechain', '0xE56043671df55dE5CDf8459710433C10324DE0aE', 'quote', 'hour', 4);
 }, 'pls', true);
+// PulseX USDC/PRVX pool – TradingView PRVXUSDC_7F681A.USD, 4h candles
+fetchCtoSignal(function() {
+  return loadGeckoPool('pulsechain', '0x7f681a5ad615238357ba148c281e2eaefd2de55a', 'quote', 'hour', 4);
+}, 'prvx', true);
 </script>
 </body>
 </html>
