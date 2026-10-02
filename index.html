@@ -88,6 +88,9 @@
     }
     .cto-meta strong { color: #aaa; }
     .cto-meta .cto-warn { color: #ffb300; }
+    .cto-meta .cto-change { font-size: 1.05rem; color: #ccc; margin-bottom: 8px; }
+    .cto-meta .cto-change .up   { color: #00c853; }
+    .cto-meta .cto-change .down { color: #ff1744; }
   </style>
 </head>
 <body class="homepage">
@@ -95,7 +98,6 @@
 <div id="main">
   <div class="container" id="main-container">
 
-    <!-- Placeholder so we can easily move the CTO section to the top -->
     <!-- NEUTRAL CTO cards are moved up into this row (hidden while empty) -->
     <div id="cto-top" class="cto-row" style="display:none"></div>
 
@@ -511,7 +513,23 @@ function fetchCtoSignal(loader, key, intraday) {
       signalEl.textContent = CTO_TEXT[closed];
       signalEl.className   = 'cto-signal ' + closed;
 
+      // Daily change: current price vs the last close before 00:00 UTC today
+      // (same session TradingView uses for its daily change %)
+      var price    = data[last][4];
+      var dayStart = Math.floor(Date.now() / 86400000) * 86400000;
+      var ref = null;
+      for (var j = last; j >= 0; j--) {
+        if (data[j][0] < dayStart) { ref = data[j][4]; break; }
+      }
+      var changeHtml = '';
+      if (ref) {
+        var pct = (price / ref - 1) * 100;
+        changeHtml = ' <span class="' + (pct >= 0 ? 'up' : 'down') + '">'
+                   + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%</span> today';
+      }
+
       metaEl.innerHTML =
+        '<div class="cto-change">' + fmtUsd(price) + changeHtml + '</div>' +
         '<strong>Color:</strong> ' + CTO_COLOR[closed] + '<br>' +
         '<strong>Since:</strong> ' + utcDate(data[start][0]) + ' (' + age + ')<br>' +
         '<strong>Live candle:</strong> ' + CTO_TEXT[live] +
