@@ -111,7 +111,7 @@
       </div>
       <div class="3u">
         <section>
-          <a href="graph.html?id=pool" class="image full"><img src="images/pool.jpg" alt="" /></a>
+          <a href="graph.html?id=pool" class="image full"><img src="images/outside.jpg" alt="" /></a>
           <p id="output-pool">Loading YoLink...</p>
         </section>
       </div>
@@ -216,7 +216,7 @@
 // =============================================================================
 var SENSORS = {
   outside:    { label: 'Outside',    hasHum: false },
-  pool:       { label: 'Pool',       hasHum: false  },
+  pool:       { label: 'Garage',       hasHum: false  },
   upstairs:   { label: 'Upstairs',   hasHum: true  },
   downstairs: { label: 'Downstairs', hasHum: true  },
   kitchen:    { label: 'Kitchen',    hasHum: true  },
@@ -262,13 +262,13 @@ function showReading(sensorId, temp, hum, time) {
   }
   // Pool displays in °F; all other sensors display in °C.
   var displayTemp, unit;
-  if (sensorId === 'pool') {
-    displayTemp = temp * 9 / 5 + 32;
-    unit = '&deg;F';
-  } else {
+  //if (sensorId === 'pool') {
+  //  displayTemp = temp * 9 / 5 + 32;
+  //  unit = '&deg;F';
+  //} else {
     displayTemp = temp;
     unit = '&deg;C';
-  }
+  //}
   var html = '<b>' + cfg.label + ': </b>'
     + '<span class="temp full">'
     + displayTemp.toFixed(1)
