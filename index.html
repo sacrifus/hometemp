@@ -54,6 +54,16 @@
       padding: 28px 40px;
       min-width: 260px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      /* Cards are links to cto-chart.html */
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .cto-signal-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5);
     }
     .cto-signal-card h3 {
       font-size: 0.95rem;
@@ -151,20 +161,20 @@
       <div class="cto-row">
 
         <!-- BTC Card -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=btc">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">BTCUSD · 1D</div>
           <div id="cto-signal-btc" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-btc" class="cto-meta"></div>
-        </div>
+        </a>
 
         <!-- ETH Card -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=eth">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">ETHUSD · 1D</div>
           <div id="cto-signal-eth" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-eth" class="cto-meta"></div>
-        </div>
+        </a>
 
       </div>
 
@@ -172,36 +182,36 @@
       <div class="cto-row">
 
         <!-- PulseChain WPLS Card (PulseX WPLS/DAI pool, same as TradingView WPLSDAI_E56043.USD) -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=pls">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">WPLS/DAI · 4H</div>
           <div id="cto-signal-pls" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-pls" class="cto-meta"></div>
-        </div>
+        </a>
 
         <!-- HEX Card (PulseX HEX/WPLS pool, TradingView HEXWPLS_F1F4EE.USD) -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=hex">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">HEX/WPLS · 4H</div>
           <div id="cto-signal-hex" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-hex" class="cto-meta"></div>
-        </div>
+        </a>
 
         <!-- ProveX PRVX Card (PulseX USDC/PRVX pool, TradingView PRVXUSDC_7F681A.USD) -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=prvx">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">PRVX/USDC · 4H</div>
           <div id="cto-signal-prvx" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-prvx" class="cto-meta"></div>
-        </div>
+        </a>
 
         <!-- pDAI Card (PulseX DAI/WPLS pool AE8429 – most liquid pDAI pool) -->
-        <div class="cto-signal-card">
+        <a class="cto-signal-card" href="cto-chart.html?coin=pdai">
           <h3>CTO LINE SIGNAL</h3>
           <div class="pair">PDAI/WPLS · 4H</div>
           <div id="cto-signal-pdai" class="cto-signal loading">Loading…</div>
           <div id="cto-meta-pdai" class="cto-meta"></div>
-        </div>
+        </a>
 
       </div>
     </div>
